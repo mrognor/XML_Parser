@@ -2,7 +2,8 @@
     <tagB>
         <tagC>
             <tagD>
-                Text    
+                Text
+                <oneline_tag param="fff"/>   
             </tagD>
             <tagE>
                 Text

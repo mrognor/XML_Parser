@@ -48,18 +48,77 @@ std::string TrimString(const std::string& str)
     return str.substr(start, end - start);
 }
 
-bool CheckTagLine(const std::string& tagLine)
+bool CheckTagName(const std::string& tagString)
+{
+
+}
+
+bool ParseTagString(const std::string& tagString, std::string* tagName, std::map<std::string, std::string>* paramsAndValues)
 {   
-    std::string tagName = tagLine.substr(0, tagLine.find(" "));
-    std::cout << tagName << "____endline" << std::endl;
-    // Substring without tag name
-    std::string trimmedTagLine = TrimString(tagLine.substr(tagLine.find(" ")));
-    std::cout << trimmedTagLine << "____endline" << std::endl;
+    // Check if tag starts with space(" ")
+    if (tagString[0] == ' ')
+        return false;
 
-    bool IsSettingParam = false;
-    bool IsParam = false;
-    for (auto it = trimmedTagLine.begin(); it != trimmedTagLine.end(); it++)
+    // Check if it is tag without params and with good tag name
+    if (tagString.find(" ") == -1 && tagString.find("<") == -1 && tagString.find("&") == -1)
     {
-
+        if (tagName != nullptr)
+            *tagName = tagString.substr(0, tagString.find(" "));
+        return true;
     }
+
+    // Substring without tag name
+    // std::string trimmedTagLine = TrimString(tagString.substr(tagString.find(" ")));
+    
+    // bool isSettingParam = false;
+    // bool isParamValue = false;
+    // char currentValueSplitter;
+
+    // std::string lastString = "";
+    // std::string paramName;
+
+    // for (auto it = trimmedTagLine.begin(); it != trimmedTagLine.end(); it++)
+    // {
+    //     // Opening param value setting "=" symbol
+    //     if (isSettingParam == false && *it == '=')
+    //     {
+    //         isSettingParam = true;
+    //         paramName = TrimString(lastString);
+    //         lastString = "";
+    //         continue;
+    //     }
+
+    //     // Opening param value "'" or """ symbol
+    //     if (isSettingParam == true && isParamValue == false && (*it == '"' || *it == '\''))
+    //     {
+    //         isParamValue = true;
+    //         lastString = "";
+
+    //         if (*it == '"')
+    //             currentValueSplitter = '"';
+    //         else
+    //             currentValueSplitter = '\'';
+
+    //         continue;
+    //     }
+
+    //     // Closing param value "'" or """ symbol
+    //     if (isSettingParam == true && isParamValue == true && *it == currentValueSplitter)
+    //     {
+    //         isSettingParam = false;
+    //         isParamValue = false;
+
+    //         if (paramsAndValues != nullptr)
+    //             paramsAndValues->insert(std::pair<std::string, std::string>(paramName, lastString));
+
+    //         paramName = "";
+    //         lastString = "";
+
+    //         continue;
+    //     }
+
+    //     lastString += *it;
+    // }
+
+    return true;
 }

@@ -80,7 +80,11 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                     }
                 }
                 else
-                    tagStringsStack.push(tagString); // Add opening tag to stack
+                {
+                    // Check if it is not one line tag
+                    if (tagString[tagString.length() - 1] != '/')
+                        tagStringsStack.push(tagString); // Add opening tag to stack
+                }
 
                 tagString = "";
                 continue;

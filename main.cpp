@@ -11,10 +11,13 @@ int main()
     // else 
     //     std::cout << "false" << std::endl;
 
-    if (CheckTagName("tag12._-._-"))
+    std::string tag;
+    if (ParseTagString("tag.1-2_3 string  = \"gasgsagtasg\"       ", &tag))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
+    
+    std::cout << tag << std::endl;
 
     // for (auto it : ParseTagString("tagB     mo = \" gw rgeb ===gbeb 'gvberb regbe's\"   gr    'gs'      "))
     //     std::cout << "Param name: " << it.first << " param value: " << it.second << "____END" << std::endl;

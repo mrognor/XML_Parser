@@ -43,17 +43,23 @@ std::vector<std::string> Split(const std::string& StringToSplit, const std::stri
 }
 
 
-std::string TrimString(const std::string& str)
+std::string TrimString(const std::string& str, bool isFromLeft, bool isFromRight)
 {
     int start = 0;
 
-    while (str[start] == ' ' || str[start] == '\t')
-        start++;
+    if (isFromLeft)
+    {
+        while (str[start] == ' ' || str[start] == '\t')
+            start++;
+    }
 
     int end = str.length();
 
-    while (str[end - 1] == ' ' || str[end - 1] == '\t')
-        end--;
+    if (isFromRight)
+    {
+        while (str[end - 1] == ' ' || str[end - 1] == '\t')
+            end--;
+    }
 
     return str.substr(start, end - start);
 }
@@ -61,6 +67,7 @@ std::string TrimString(const std::string& str)
 
 bool CheckTagName(const std::string& tagString)
 {
+    // Check first symbol on string
     if ((isalpha(tagString[0]) || isalnum(tagString[0]) || tagString[0] == '_') == false)
     {
         LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in tag name");
@@ -82,20 +89,25 @@ bool CheckTagName(const std::string& tagString)
 
 bool ParseTagString(const std::string& tagString, std::string* tagName, std::map<std::string, std::string>* paramsAndValues)
 {   
-    // CheckTagName();
-
     // Check if tag starts with space(" ")
-    if (tagString[0] == ' ')
-        return false;
-
-    // Check if it is tag without params and with good tag name
-    if (tagString.find(" ") == -1 && tagString.find("<") == -1 && tagString.find("&") == -1)
+    if (tagString[0] == ' ' || tagString[0] == '\t')
     {
-        if (tagName != nullptr)
-            *tagName = tagString.substr(0, tagString.find(" "));
-        return true;
+        LOG("Tag cannot start with a space or a tab");
+        return false;
     }
 
+    // Find tag name
+    std::string trimmedTagString = TrimString(tagString);
+    std::string tmpTagName = trimmedTagString.substr(0, trimmedTagString.find(" "));
+
+    // Check tag name validity and set pointer value if it is not nullptr
+    if (!CheckTagName(tmpTagName))
+        return false;
+    else
+        if (tagName != nullptr)
+            *tagName = tmpTagName;
+    
+    return true;
     // Substring without tag name
     // std::string trimmedTagLine = TrimString(tagString.substr(tagString.find(" ")));
     

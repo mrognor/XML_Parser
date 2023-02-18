@@ -5,6 +5,23 @@
 #include <vector>
 #include <iostream>
 
+// Pointer to log function. By default set to nullptr inside XML_Functions.cpp
+// Can be defined by user using SetLogFunc
+extern void (*LogFuncPtr)(std::string);
+
+#ifndef NDEBUG
+#define LOG(error) \
+    if (LogFuncPtr == nullptr) \
+        std::cerr << error << std::endl; \
+    else \
+        LogFuncPtr(error);
+#else
+#define LOG(error)
+#endif
+
+// Function to set log function. Gets pointer to function with signature: void(std::string)
+void SetLogFunc(void (*logFuncPtr)(std::string));
+
 std::vector<std::string> Split(const std::string& StringToSplit, const std::string& SplitterString);
 
 // This function delete all spaces and tabs from line beggining and ending

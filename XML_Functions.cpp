@@ -1,5 +1,14 @@
 #include "XML_Functions.h"
 
+void (*LogFuncPtr)(std::string) = nullptr;
+
+
+void SetLogFunc(void (*logFuncPtr)(std::string))
+{
+    LogFuncPtr = logFuncPtr; 
+}
+
+
 std::vector<std::string> Split(const std::string& StringToSplit, const std::string& SplitterString)
 {
     std::vector<std::string> ReturnVector;
@@ -33,6 +42,7 @@ std::vector<std::string> Split(const std::string& StringToSplit, const std::stri
     return ReturnVector;
 }
 
+
 std::string TrimString(const std::string& str)
 {
     int start = 0;
@@ -48,10 +58,12 @@ std::string TrimString(const std::string& str)
     return str.substr(start, end - start);
 }
 
+
 bool CheckTagName(const std::string& tagString)
 {
 
 }
+
 
 bool ParseTagString(const std::string& tagString, std::string* tagName, std::map<std::string, std::string>* paramsAndValues)
 {   

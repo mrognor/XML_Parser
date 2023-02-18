@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "XML_Functions.h"
+
 class XmlValidator
 {
 private:

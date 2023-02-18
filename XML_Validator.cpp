@@ -6,7 +6,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     
     if (!fileToValidate.is_open())
     {
-        std::cerr << "Faile to open file: " << fileName << std::endl;
+        LOG("Faile to open file: ");
         return false;
     }
 
@@ -47,7 +47,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 // '<' symbol without closing tag
                 if (isTagStringOpened)
                 {
-                    std::cerr << "Opened new tag without closing previous on line: " << lineNumber << std::endl;
+                    LOG("Opened new tag without closing previous on line: ");
                     return false;
                 }
 
@@ -63,7 +63,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 // Check if it is suitable tag name
                 if (isalpha(tagString[0]) == 0 && tagString[0] != '/')
                 {
-                    std::cerr << "Wrong tag name on line: " << lineNumber << std::endl;
+                    LOG("Wrong tag name on line: ");
                     return false;
                 }
 
@@ -75,7 +75,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                         tagStringsStack.pop();
                     else 
                     {
-                        std::cerr << "Closing wrong tag on line: " << lineNumber << " Expected: " << tagStringsStack.top() << std::endl;
+                        LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStack.top());
                         return false;
                     }
                 }

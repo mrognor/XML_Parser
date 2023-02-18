@@ -5,8 +5,13 @@
 
 int main()
 {
-    XmlValidator v;
-    if (v.ValidateFile("tests.xml"))
+    // XmlValidator v;
+    // if (v.ValidateFile("tests.xml"))
+    //     std::cout << "true" << std::endl;
+    // else 
+    //     std::cout << "false" << std::endl;
+
+    if (CheckTagName("tag12._-._-"))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;

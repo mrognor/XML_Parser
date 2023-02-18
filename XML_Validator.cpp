@@ -6,7 +6,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     
     if (!fileToValidate.is_open())
     {
-        LOG("Faile to open file: ");
+        LOG("Failed to open file: ");
         return false;
     }
 

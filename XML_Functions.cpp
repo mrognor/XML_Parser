@@ -61,12 +61,29 @@ std::string TrimString(const std::string& str)
 
 bool CheckTagName(const std::string& tagString)
 {
+    if ((isalpha(tagString[0]) || isalnum(tagString[0]) || tagString[0] == '_') == false)
+    {
+        LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in tag name");
+        return false;
+    }
 
+    for (auto ch : tagString)
+    {
+        // Check all available symbols in tag name
+        if ((isalpha(ch) || isalnum(ch) || ch == '.' || ch == '_' || ch == '-') == false)
+        {
+            LOG("Symbol: \"" + std::string(1, ch) + "\" not allowed in tag name");
+            return false;
+        }
+    }
+    return true;
 }
 
 
 bool ParseTagString(const std::string& tagString, std::string* tagName, std::map<std::string, std::string>* paramsAndValues)
 {   
+    // CheckTagName();
+
     // Check if tag starts with space(" ")
     if (tagString[0] == ' ')
         return false;

@@ -31,7 +31,10 @@ std::vector<std::string> Split(const std::string& StringToSplit, const std::stri
 std::string TrimString(const std::string& str, bool isFromLeft = true, bool isFromRight = true);
 
 // Check if this string can be valid tag name
-bool CheckTagName(const std::string& tagString);
+bool CheckTagAndParamName(const std::string& tagString);
+
+// Check if this string can be in xml
+bool CheckString(const std::string& valueString);
 
 // Check if this string can be valid tag
-bool ParseTagString(const std::string& tagString, std::string* tagName = nullptr, std::map<std::string, std::string>* paramsAndValues = nullptr);
+bool ParseTagString(const std::string& tagString, std::string& tagName, std::map<std::string, std::string>& paramsAndValues);

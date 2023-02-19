@@ -11,16 +11,18 @@ int main()
     // else 
     //     std::cout << "false" << std::endl;
 
-    std::string tag;
-    if (ParseTagString("tag.1-2_3 string  = \"gasgsagtasg\"       ", &tag))
+    std::string tagName;
+    std::map<std::string, std::string> tagParams;
+
+    if (ParseTagString("tag.1-2_3  val = 'par&lt;hgh;'", tagName, tagParams))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
     
-    std::cout << tag << std::endl;
-
-    // for (auto it : ParseTagString("tagB     mo = \" gw rgeb ===gbeb 'gvberb regbe's\"   gr    'gs'      "))
-    //     std::cout << "Param name: " << it.first << " param value: " << it.second << "____END" << std::endl;
+    std::cout << "Tag name: "<< tagName << std::endl;
+    
+    for (auto it : tagParams)
+        std::cout << "Param: " << it.first << " Value: " << it.second << std::endl;
 
     // To-Do
     // 1. -- inside comment

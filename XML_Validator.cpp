@@ -6,7 +6,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     
     if (!fileToValidate.is_open())
     {
-        LOG("Failed to open file: ");
+        LOG("Failed to open file: " + fileName);
         return false;
     }
 
@@ -23,7 +23,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
         for (auto stringChar = fileLine.begin(); stringChar != fileLine.end(); stringChar++)
         {
             // Check if it is opening comment
-            if ((stringChar + 1) != fileLine.end() && (stringChar + 2) != fileLine.end() &&
+            if ((stringChar + 1) != fileLine.end() && (stringChar + 2) != fileLine.end() && (stringChar + 3) != fileLine.end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
             {
                 isComment = true;
@@ -47,7 +47,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 // '<' symbol without closing tag
                 if (isTagStringOpened)
                 {
-                    LOG("Opened new tag without closing previous on line: ");
+                    LOG("Opened new tag without closing previous on line: " + std::to_string(lineNumber));
                     return false;
                 }
 
@@ -63,7 +63,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 // Check if it is suitable tag name
                 if (isalpha(tagString[0]) == 0 && tagString[0] != '/')
                 {
-                    LOG("Wrong tag name on line: ");
+                    LOG("Wrong tag name on line: " + std::to_string(lineNumber));
                     return false;
                 }
 

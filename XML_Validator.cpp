@@ -11,6 +11,16 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     }
 
     std::string fileLine;
+    std::vector<std::string> fileVec;
+
+    while (getline(fileToValidate, fileLine))
+        fileVec.push_back(fileLine);
+    
+    return ValidateVectorOfString(fileVec);
+}
+
+bool XmlValidator::ValidateVectorOfString(std::vector<std::string>& vectorToValidate)
+{
     // String to store all chars in tags
     std::string tagString;
     // String to store all chars between tags
@@ -24,23 +34,23 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     bool isComment = false;
     bool wasAtLeastOneTag = false;
 
-    while (std::getline(fileToValidate, fileLine))
+    for (std::string xmlString : vectorToValidate)
     {
         // Ignore line with xml specification
         if (lineNumber == 0)
         {
-            std::string xmlSpecString = TrimString(fileLine, false);
-            if(fileLine[0] == '<' && fileLine[1] == '?' &&
+            std::string xmlSpecString = TrimString(xmlString, false);
+            if(xmlString[0] == '<' && xmlString[1] == '?' &&
                 xmlSpecString[xmlSpecString.length() - 1] == '>' && 
                 xmlSpecString[xmlSpecString.length() - 2] == '?')
                 continue;
         }
 
         lineNumber++;
-        for (auto stringChar = fileLine.begin(); stringChar != fileLine.end(); stringChar++)
+        for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); stringChar++)
         {
             // Check if it is opening comment
-            if ((stringChar + 1) != fileLine.end() && (stringChar + 2) != fileLine.end() && (stringChar + 3) != fileLine.end() &&
+            if ((stringChar + 1) != xmlString.end() && (stringChar + 2) != xmlString.end() && (stringChar + 3) != xmlString.end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
             {
                 isComment = true;

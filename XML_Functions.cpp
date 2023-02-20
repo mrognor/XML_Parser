@@ -256,7 +256,12 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
                 LOG("Wrong param value");
                 return false;
             }
-                
+            
+            if (tmpParamsAndValues.find(paramName) != tmpParamsAndValues.end())
+            {
+                LOG("Attribure " + paramName + " redefined");
+                return false;
+            }
             tmpParamsAndValues.insert(std::pair<std::string, std::string>(paramName, lastString));
 
             paramName = "";

@@ -3,7 +3,8 @@
 <tagA>
     <tagB>
         <tagC>
-            <tagD pa = "DDD">
+            <tagD para = "DDD">
+            <!-- <tagD para = "DDD" para = "f"> -->
             <!-- Remove space between to test "- -" -->
             <!-- <tagD pa = "DDD"> -->
             <!-- <tagD pa = "DDD> -->

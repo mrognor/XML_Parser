@@ -33,22 +33,33 @@ bool XmlValidator::ValidateVectorOfString(std::vector<std::string>& vectorToVali
     int lineNumber = 0;
     bool isComment = false;
     bool wasAtLeastOneTag = false;
+    bool isSpecString = false;
 
     for (std::string xmlString : vectorToValidate)
     {
+        lineNumber++;
+
         // Ignore line with xml specification
-        if (lineNumber == 0)
+        if (lineNumber == 1)
         {
-            std::string xmlSpecString = TrimString(xmlString, false);
-            if(xmlString[0] == '<' && xmlString[1] == '?' &&
-                xmlSpecString[xmlSpecString.length() - 1] == '>' && 
-                xmlSpecString[xmlSpecString.length() - 2] == '?')
+            std::string trimString = TrimString(xmlString, false);
+            // Check if it is starts from "<&" string
+            if(xmlString.length() >= 2 && xmlString[0] == '<' && xmlString[1] == '?')
+            {
+                isSpecString = true;
                 continue;
+            }
         }
 
-        lineNumber++;
         for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); stringChar++)
         {
+            // Check if it is closing spec string
+            if (isSpecString && *stringChar == '>' && *(stringChar - 1) == '?')
+            {
+                isSpecString = false;
+                continue;
+            }
+
             // Check if it is opening comment
             if ((stringChar + 1) != xmlString.end() && (stringChar + 2) != xmlString.end() && (stringChar + 3) != xmlString.end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')

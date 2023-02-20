@@ -177,7 +177,11 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
     if (CheckTagAndParamName(tmpTagName))
         tagName = tmpTagName;
     else
-        return false;    
+    {
+        LOG("Wrong tag or parametr name");
+        return false;
+    }
+            
     
     // Check if it only tag name without params
     if (tagString == tmpTagName)
@@ -210,7 +214,10 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
             lastString = "";
 
             if (!CheckTagAndParamName(paramName))
+            {
+                LOG("Wrong tag or parametr name");
                 return false;
+            }
 
             continue;
         }
@@ -245,8 +252,11 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
             valuesCounter++;
 
             if (!CheckString(lastString))
+            {
+                LOG("Wrong param value");
                 return false;
-
+            }
+                
             tmpParamsAndValues.insert(std::pair<std::string, std::string>(paramName, lastString));
 
             paramName = "";

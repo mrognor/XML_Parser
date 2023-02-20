@@ -12,6 +12,8 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
 
     std::string fileLine;
     std::string tagString;
+    std::string valueString;
+
     std::stack<std::string> tagStringsStack;
     bool isTagStringOpened = false;
     int lineNumber = 0;
@@ -52,6 +54,16 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 }
 
                 isTagStringOpened = true;
+
+                std::string trimmedValueString = TrimString(valueString);
+                if (!CheckString(trimmedValueString))
+                {
+                    LOG("Invalid symbol on line: " + std::to_string(lineNumber));
+                    return false;
+                }
+                
+                valueString.clear();
+
                 continue;
             }
 
@@ -104,6 +116,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
             // Check if tag line opened
             if (isTagStringOpened)
                 tagString += *stringChar;
+            else valueString += *stringChar;
         }
     }
     

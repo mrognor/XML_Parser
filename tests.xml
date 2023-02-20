@@ -1,10 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <tagA>
     <tagB>
         <tagC>
             <tagD pa = "DDD">
+            <!-- Remove space between to test "- -" -->
+            <!-- <tagD pa = "DDD"> -->
+            <!-- <tagD pa = "DDD> -->
+            <!-- <tagD pa = "> -->
+            <!-- <tagD pa = DDD"> -->
+            <!-- <tagD pa = DDD> -->
+            <!-- <tagD pa = > -->
+            <!-- <tagD pa "DDD"> -->
+            <!-- <tagD pa DDD"> -->
+            <!-- <tagD pa "DDD> -->
+            <!-- <tagD pa> -->
+            <!-- <tagD = "DDD"> -->
+            <!-- <tagD "DDD"> -->
+            <!-- <tagD pa = "DDD"> -->
+            <!-- <tagD pa = "DDD"> -->
+            <!-- <tagD pa = "DDD"> -->
                 Text
+                <!-- Text& -->
+                <!-- Text&lt; -->
+                <!-- Text& < -->
+            <!-- </ClosingWrongTag> -->
+
                 <oneline_tag param="fff"/>
             </tagD>
+            <!-- </tagD rgb = "fgddfgf"> -->
             <tagE>
                 Text
             </tagE>

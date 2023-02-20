@@ -11,16 +11,31 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     }
 
     std::string fileLine;
+    // String to store all chars in tags
     std::string tagString;
+    // String to store all chars between tags
     std::string valueString;
+    // String to store comments
+    std::string commentString;
 
     std::stack<std::string> tagStringsStack;
     bool isTagStringOpened = false;
     int lineNumber = 0;
     bool isComment = false;
+    bool wasAtLeastOneTag = false;
 
     while (std::getline(fileToValidate, fileLine))
     {
+        // Ignore line with xml specification
+        if (lineNumber == 0)
+        {
+            std::string xmlSpecString = TrimString(fileLine, false);
+            if(fileLine[0] == '<' && fileLine[1] == '?' &&
+                xmlSpecString[xmlSpecString.length() - 1] == '>' && 
+                xmlSpecString[xmlSpecString.length() - 2] == '?')
+                continue;
+        }
+
         lineNumber++;
         for (auto stringChar = fileLine.begin(); stringChar != fileLine.end(); stringChar++)
         {
@@ -36,16 +51,33 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
             if (*stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
             {
                 isComment = false;
+
+                if (commentString.substr(3, commentString.length() - 5).find("--") != -1)
+                {
+                    LOG("The string \"--\" is not valid inside comments");
+                    return false;
+                }
+
+                commentString.clear();
                 continue;
             }
 
             // Skip all logic if it is a comment
             if (isComment)
+            {
+                commentString += *stringChar;
                 continue;
+            }
 
             // Check opening tag string
             if (*stringChar == '<')
             {
+                if (tagStringsStack.size() == 0 && wasAtLeastOneTag)
+                {
+                    LOG("There can be only one root element in a file. New root element on line: " + std::to_string(lineNumber));
+                    return false;
+                }
+
                 // '<' symbol without closing tag
                 if (isTagStringOpened)
                 {
@@ -98,6 +130,7 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                             return false;
                         }
                         tagStringsStack.push(tagName); // Add opening tag to stack
+                        wasAtLeastOneTag = true;
                     }
                     else // One line tag check
                     {

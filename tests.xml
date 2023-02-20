@@ -1,9 +1,9 @@
 <tagA>
     <tagB>
         <tagC>
-            <tagD>
+            <tagD pa = "DDD">
                 Text
-                <oneline_tag param="fff"/>   
+                <oneline_tag param="fff"/>
             </tagD>
             <tagE>
                 Text

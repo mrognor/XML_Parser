@@ -60,18 +60,11 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
             {
                 isTagStringOpened = false;
 
-                // Check if it is suitable tag name
-                if (isalpha(tagString[0]) == 0 && tagString[0] != '/')
-                {
-                    LOG("Wrong tag name on line: " + std::to_string(lineNumber));
-                    return false;
-                }
-
                 // Check if it is closing tag
                 if(tagString[0] == '/')
                 {
                     // Check if closing tag equals or not opening tag
-                    if (tagStringsStack.size() != 0 && tagString.substr(1) == tagStringsStack.top())
+                    if (tagStringsStack.size() != 0 && TrimString(tagString.substr(1)) == tagStringsStack.top())
                         tagStringsStack.pop();
                     else 
                     {
@@ -81,9 +74,27 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
                 }
                 else
                 {
+                    std::string tagName;
+                    std::map<std::string, std::string> paramsAndValues;
+
                     // Check if it is not one line tag
                     if (tagString[tagString.length() - 1] != '/')
-                        tagStringsStack.push(tagString); // Add opening tag to stack
+                    {
+                        if (!ParseTagString(tagString, tagName, paramsAndValues))
+                        {
+                            LOG("Wrong tag name on line: " + std::to_string(lineNumber));
+                            return false;
+                        }
+                        tagStringsStack.push(tagName); // Add opening tag to stack
+                    }
+                    else // One line tag check
+                    {
+                        if (!ParseTagString(tagString.substr(0, tagString.length() - 1), tagName, paramsAndValues))
+                        {
+                            LOG("Wrong tag name on line: " + std::to_string(lineNumber));
+                            return false;
+                        }
+                    }
                 }
 
                 tagString = "";

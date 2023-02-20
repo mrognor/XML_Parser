@@ -102,7 +102,7 @@ bool CheckString(const std::string& valueString)
     {
         if (*it == '<')
         {
-            LOG("Symbol \"<\" not allowed in a param value");
+            LOG("Symbol \"<\" not allowed in a non-tag usage");
             return false;
         }
 

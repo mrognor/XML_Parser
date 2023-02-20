@@ -9,37 +9,38 @@ void SetLogFunc(void (*logFuncPtr)(std::string))
 }
 
 
-std::vector<std::string> Split(const std::string& StringToSplit, const std::string& SplitterString)
+std::vector<std::string> Split(const std::string& stringToSplit, const std::string& splitterString)
 {
-    std::vector<std::string> ReturnVector;
+    std::vector<std::string> returnVector;
     int i = 0;
-    std::string SplittedString = "";
-    while (i < StringToSplit.size())
+    std::string splittedString = "";
+
+    while (i < stringToSplit.size())
     {
-        if (StringToSplit[i] == SplitterString[0])
+        if (stringToSplit[i] == splitterString[0])
         {
-            bool IsSplitter = true;
-            for (int j = 1; j < SplitterString.size(); j++)
+            bool isSplitter = true;
+            for (int j = 1; j < splitterString.size(); j++)
             {
-                if (StringToSplit[i + j] != SplitterString[j])
+                if (stringToSplit[i + j] != splitterString[j])
                 {
-                    IsSplitter = false;
+                    isSplitter = false;
                     break;
                 }
             }
-            if (IsSplitter)
+            if (isSplitter)
             {
-                ReturnVector.push_back(SplittedString);
-                SplittedString = "";
-                i += SplitterString.size();
+                returnVector.push_back(splittedString);
+                splittedString = "";
+                i += splitterString.size();
                 continue;
             }
         }
-        SplittedString += StringToSplit[i];
+        splittedString += stringToSplit[i];
         i++;
     }
-    ReturnVector.push_back(SplittedString);
-    return ReturnVector;
+    returnVector.push_back(splittedString);
+    return returnVector;
 }
 
 
@@ -190,11 +191,14 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
     // Substring without tag name
     std::string trimmedParamsLine = TrimString(tagString.substr(tagString.find(" ")));
     
+    // Variable to stere is setting parametr after "=" symbol
     bool isSettingParam = false;
+    // Variable to stere is parametr value after "=" symbol and "'" or """ symbol
     bool isParamValue = false;
+    // Variable to store how last value stored, in "'" symbols or in """ symbols
     char currentValueSplitter;
 
-    std::string lastString = "";
+    std::string lastString;
     std::string paramName;
 
     std::map<std::string, std::string> tmpParamsAndValues;

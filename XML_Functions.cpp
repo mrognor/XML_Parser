@@ -53,22 +53,15 @@ std::string TrimString(const std::string& str, bool isFromLeft, bool isFromRight
 
     if (isFromLeft)
     {
-        while (str[start] == ' ' || str[start] == '\t')
+        while (start < str.length() && (str[start] == ' ' || str[start] == '\t'))
             start++;
     }
 
     int end = str.length();
 
-    if (end == 0)
-    {
-
-        std::cout << "F" << std::endl;
-
-    }
-
     if (isFromRight)
     {
-        while (str[end - 1] == ' ' || str[end - 1] == '\t')
+        while (end > 0 && (str[end - 1] == ' ' || str[end - 1] == '\t'))
             end--;
     }
 

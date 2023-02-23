@@ -1,7 +1,10 @@
 #include "XML_Validator.h"
 
+// This class required only to extract lines from files with iterators
 class line : public std::string {};
 
+// Define operator stream reading from file to line class
+// Required because if read to string all spaces will be stop reading line
 std::istream &operator>>(std::istream &is, line &l)
 {
     std::getline(is, l);

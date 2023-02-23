@@ -14,5 +14,7 @@ private:
 public:
     bool ValidateFile(const std::string& fileName);
 
-    bool ValidateVectorOfString(std::vector<std::string>& vectorToValidate);
+    bool ValidateString(const std::string& str);
+
+    bool ValidateVectorOfString(const std::vector<std::string>& vectorToValidate);
 };

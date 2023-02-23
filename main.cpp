@@ -11,4 +11,14 @@ int main()
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
+
+    if (v.ValidateVectorOfString({"<tagA>", "<tagB p='fff'>", "<tagC p='fffff'/>", "</tagB>", "</tagA>"}))
+        std::cout << "true" << std::endl;
+    else 
+        std::cout << "false" << std::endl;
+
+    if (v.ValidateString("<tagA><tagB p='fff'><tagC p='fffff'/></tagB></tagA>"))
+        std::cout << "true" << std::endl;
+    else 
+        std::cout << "false" << std::endl;
 }

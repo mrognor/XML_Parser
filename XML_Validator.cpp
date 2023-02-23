@@ -19,7 +19,13 @@ bool XmlValidator::ValidateFile(const std::string& fileName)
     return ValidateVectorOfString(fileVec);
 }
 
-bool XmlValidator::ValidateVectorOfString(std::vector<std::string>& vectorToValidate)
+bool XmlValidator::ValidateString(const std::string& str)
+{
+    std::vector<std::string> vec = {str};
+    return ValidateVectorOfString(vec);
+}
+
+bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vectorToValidate)
 {
     // String to store all chars in tags
     std::string tagString;

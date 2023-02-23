@@ -180,5 +180,11 @@ bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vector
         }
     }
     
-    return true;
+    if (!tagStringsStack.empty())
+    {
+        LOG("Dont closed tags")
+        return false;
+    }
+    else
+        return true;
 }

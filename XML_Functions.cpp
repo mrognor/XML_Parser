@@ -59,6 +59,13 @@ std::string TrimString(const std::string& str, bool isFromLeft, bool isFromRight
 
     int end = str.length();
 
+    if (end == 0)
+    {
+
+        std::cout << "F" << std::endl;
+
+    }
+
     if (isFromRight)
     {
         while (str[end - 1] == ' ' || str[end - 1] == '\t')

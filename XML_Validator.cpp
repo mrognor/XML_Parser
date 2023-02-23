@@ -1,31 +1,15 @@
 #include "XML_Validator.h"
 
-bool XmlValidator::ValidateFile(const std::string& fileName)
+class line : public std::string {};
+
+std::istream &operator>>(std::istream &is, line &l)
 {
-    std::ifstream fileToValidate(fileName.c_str());
-    
-    if (!fileToValidate.is_open())
-    {
-        LOG("Failed to open file: " + fileName);
-        return false;
-    }
-
-    std::string fileLine;
-    std::vector<std::string> fileVec;
-
-    while (getline(fileToValidate, fileLine))
-        fileVec.push_back(fileLine);
-    
-    return ValidateVectorOfString(fileVec);
+    std::getline(is, l);
+    return is;
 }
 
-bool XmlValidator::ValidateString(const std::string& str)
-{
-    std::vector<std::string> vec = {str};
-    return ValidateVectorOfString(vec);
-}
-
-bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vectorToValidate)
+template<class T>
+bool Validate(T xmlStringIt, T endIt)
 {
     // String to store all chars in tags
     std::string tagString;
@@ -41,23 +25,23 @@ bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vector
     bool wasAtLeastOneTag = false;
     bool isSpecString = false;
 
-    for (std::string xmlString : vectorToValidate)
+    for (; xmlStringIt != endIt; xmlStringIt++)
     {
         lineNumber++;
 
         // Ignore line with xml specification
         if (lineNumber == 1)
         {
-            std::string trimString = TrimString(xmlString, false);
+            std::string trimString = TrimString((*xmlStringIt), false);
             // Check if it is starts from "<&" string
-            if(xmlString.length() >= 2 && xmlString[0] == '<' && xmlString[1] == '?')
+            if((*xmlStringIt).length() >= 2 && (*xmlStringIt)[0] == '<' && (*xmlStringIt)[1] == '?')
             {
                 isSpecString = true;
                 continue;
             }
         }
 
-        for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); stringChar++)
+        for (auto stringChar = (*xmlStringIt).begin(); stringChar != (*xmlStringIt).end(); stringChar++)
         {
             // Check if it is closing spec string
             if (isSpecString && *stringChar == '>' && *(stringChar - 1) == '?')
@@ -67,7 +51,7 @@ bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vector
             }
 
             // Check if it is opening comment
-            if ((stringChar + 1) != xmlString.end() && (stringChar + 2) != xmlString.end() && (stringChar + 3) != xmlString.end() &&
+            if ((stringChar + 1) != (*xmlStringIt).end() && (stringChar + 2) != (*xmlStringIt).end() && (stringChar + 3) != (*xmlStringIt).end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
             {
                 isComment = true;
@@ -187,4 +171,31 @@ bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vector
     }
     else
         return true;
+}
+
+bool XmlValidator::ValidateFile(const std::string& fileName)
+{
+    std::ifstream fileToValidate(fileName.c_str());
+    
+    if (!fileToValidate.is_open())
+    {
+        LOG("Failed to open file: " + fileName);
+        return false;
+    }
+
+    std::istream_iterator<line> begin(fileToValidate);
+    std::istream_iterator<line> end;
+    
+    return Validate(begin, end);
+}
+
+bool XmlValidator::ValidateString(const std::string& str)
+{
+    std::vector<std::string> vec = {str};
+    return ValidateVectorOfString(vec);
+}
+
+bool XmlValidator::ValidateVectorOfString(const std::vector<std::string>& vectorToValidate)
+{
+    return Validate(vectorToValidate.begin(), vectorToValidate.end());
 }

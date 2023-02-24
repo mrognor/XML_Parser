@@ -11,13 +11,36 @@ int main()
     else 
         std::cout << "false" << std::endl;
 
+    for (const auto& it : p.getData())
+        std::cout << it << std::endl;
+
+    std::cout << std::endl;
+
     if (p.ValidateVectorOfString({"<tagA>", "<tagB p='fff'>", "<tagC p='fffff'/>", "</tagB>", "</tagA>"}))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
 
+    for (const auto& it : p.getData())
+        std::cout << it << std::endl;
+
+    std::cout << std::endl;
+
     if (p.ValidateString("<tagA><tagB p='fff'><tagC p='fffff'/></tagB></tagA>"))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
+
+    for (const auto& it : p.getData())
+        std::cout << it << std::endl;
+
+    std::cout << std::endl;
+
+    if (p.ValidateFile("xml_files/parsing_tests.xml"))
+        std::cout << "true" << std::endl;
+    else 
+        std::cout << "false" << std::endl;
+
+    for (const auto& it : p.getData())
+        std::cout << it << std::endl;
 }

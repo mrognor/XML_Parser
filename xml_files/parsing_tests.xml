@@ -1,0 +1,15 @@
+<tagA>
+    <tagB>
+        <tagC>
+            <tagD para = "DDD"
+            fff = "fsfd">
+                <oneline_tag param="fff"/>
+            </tagD>
+            <tagE>
+                Text1
+                Text2
+                Text3
+            </tagE>
+        </tagC>
+    </tagB>
+</tagA>

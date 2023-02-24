@@ -15,12 +15,14 @@ std::istream &operator>>(std::istream &is, line &l)
 // Takes the beginning and end of the container as a parameter
 // The iterator must contain the std::string
 template<class T>
-bool Validate(T begin, T end)
+bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
 {
+    listWithAllData.clear();
+
     // String to store all chars in tags
     std::string tagString;
     // String to store all chars between tags
-    std::string valueString;
+    std::string betweenTagsString;
     // String to store comments
     std::string commentString;
 
@@ -104,15 +106,17 @@ bool Validate(T begin, T end)
 
                 isTagStringOpened = true;
 
-                std::string trimmedValueString = TrimString(valueString);
+                std::string trimmedValueString = TrimString(betweenTagsString);
                 if (!CheckString(trimmedValueString))
                 {
                     LOG("Invalid symbol on line: " + std::to_string(lineNumber));
                     return false;
                 }
                 
-                valueString.clear();
-
+                if (!TrimString(betweenTagsString).empty())
+                    listWithAllData.push_back(TrimString(betweenTagsString));
+                    
+                betweenTagsString.clear();
                 continue;
             }
 
@@ -159,14 +163,22 @@ bool Validate(T begin, T end)
                     }
                 }
 
-                tagString = "";
+                listWithAllData.push_back("<" + tagString + ">");
+                tagString.clear();
                 continue;
             }
 
             // Check if tag line opened
             if (isTagStringOpened)
                 tagString += *stringChar;
-            else valueString += *stringChar;
+            else betweenTagsString += *stringChar;
+        }
+
+        // Add non tag and non comment line to data list
+        if (!isTagStringOpened && !isComment && !TrimString(betweenTagsString).empty())
+        {
+            listWithAllData.push_back(TrimString(betweenTagsString));
+            betweenTagsString.clear();
         }
     }
     
@@ -192,7 +204,7 @@ bool XmlParser::ValidateFile(const std::string& fileName)
     std::istream_iterator<line> begin(fileToValidate);
     std::istream_iterator<line> end;
     
-    return Validate(begin, end);
+    return Validate(begin, end, Data);
 }
 
 bool XmlParser::ValidateString(const std::string& str)
@@ -203,5 +215,5 @@ bool XmlParser::ValidateString(const std::string& str)
 
 bool XmlParser::ValidateVectorOfString(const std::vector<std::string>& vectorToValidate)
 {
-    return Validate(vectorToValidate.begin(), vectorToValidate.end());
+    return Validate(vectorToValidate.begin(), vectorToValidate.end(), Data);
 }

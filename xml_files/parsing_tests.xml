@@ -3,8 +3,9 @@
         <tagC>
             <tagD para = "DDD"
             fff = "fsfd">
-                <oneline_tag param="fff"/>
+                Text0
             </tagD>
+            <oneline_tag param="fff"/>
             <tagE>
                 Text1
                 Text2

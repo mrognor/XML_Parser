@@ -126,14 +126,21 @@ bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
                 isTagStringOpened = false;
 
                 // Check if it is closing tag
-                if(tagString[0] == '/')
+                if (tagString[0] == '/')
                 {
                     // Check if closing tag equals or not opening tag
                     if (tagStringsStack.size() != 0 && TrimString(tagString.substr(1)) == tagStringsStack.top())
                         tagStringsStack.pop();
                     else 
                     {
-                        LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStack.top());
+                        if (tagStringsStack.empty())
+                        {
+                            LOG("Closing not opened tag on line: " + std::to_string(lineNumber));
+                        }
+                        else
+                        {
+                            LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStack.top());
+                        }
                         return false;
                     }
                 }
@@ -180,6 +187,13 @@ bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
             listWithAllData.push_back(TrimString(betweenTagsString));
             betweenTagsString.clear();
         }
+
+        // Clear comment string if new line
+        if (isComment)
+        {
+            commentString.clear();
+            continue;
+        }
     }
     
     if (!tagStringsStack.empty())
@@ -216,4 +230,66 @@ bool XmlParser::ValidateString(const std::string& str)
 bool XmlParser::ValidateVectorOfString(const std::vector<std::string>& vectorToValidate)
 {
     return Validate(vectorToValidate.begin(), vectorToValidate.end(), Data);
+}
+
+void XmlParser::Find()
+{
+    std::string path;
+    std::string tagName;
+    std::string tagString;
+    DataType data;
+    std::map<std::string, std::string> paramsAndValues;
+
+    for (const auto& it : Data)
+    {
+        tagName.clear();
+        data = empty;
+        paramsAndValues.clear();
+        tagString.clear();
+
+        // Is tag
+        if(it.length() >= 3 && it[0] == '<' && it[it.length() - 1] == '>')
+        {
+            data = openingTag;
+            tagString = it.substr(1, it.length() - 2);
+
+            // Closing tag
+            if (it.length() >= 4 && it[1] == '/')
+            {
+                data = closingTag;
+                tagString = tagString.substr(1);
+            }
+            // Inline tag
+            if (it.length() >= 4 && it[it.length() - 2] == '/')
+            {
+                data = inlineTag;
+                tagString = tagString.substr(0, tagString.length() - 1);
+            }
+        }
+        else 
+            data = text;
+
+        // If opening or inline tag
+        if (data == 0 || data == 2)
+        {
+            ParseTagString(tagString, tagName, paramsAndValues);
+            path += "/" + tagName;
+        }
+        
+        // If closing tag
+        if (data == 1)
+        {
+            ParseTagString(tagString, tagName, paramsAndValues);
+            path = path.substr(0, path.length() - 1 - tagName.length());
+        }
+
+        std::cout << "Path: " << path << "    Tag name: " << tagName << "     ";
+        std::cout << it << std::endl;
+
+        // Remove inline tag
+        if (data == 2)
+        {
+            path = path.substr(0, path.length() - 1 - tagName.length());
+        }
+    }
 }

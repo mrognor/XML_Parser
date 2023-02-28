@@ -32,5 +32,75 @@ public:
 
     bool ValidateVectorOfString(const std::vector<std::string>& vectorToValidate);
 
-    void Find();
+    template <class T>
+    void QueryData(T func);
 };
+
+template <class T>
+void XmlParser::QueryData(T func)
+{
+    std::string path;
+    std::string tagName;
+    std::string tagString;
+    DataType dataType;
+    std::map<std::string, std::string> paramsAndValues;
+
+    for (const auto& it : Data)
+    {
+        tagName.clear();
+        dataType = empty;
+        paramsAndValues.clear();
+        tagString.clear();
+
+        // Is tag
+        if(it.length() >= 3 && it[0] == '<' && it[it.length() - 1] == '>')
+        {
+            dataType = openingTag;
+            tagString = it.substr(1, it.length() - 2);
+
+            // Closing tag
+            if (it.length() >= 4 && it[1] == '/')
+            {
+                dataType = closingTag;
+                tagString = tagString.substr(1);
+            }
+            // Inline tag
+            if (it.length() >= 4 && it[it.length() - 2] == '/')
+            {
+                dataType = inlineTag;
+                tagString = tagString.substr(0, tagString.length() - 1);
+            }
+        }
+        else 
+            dataType = text;
+
+        // If opening or inline tag
+        if (dataType == 0 || dataType == 2)
+        {
+            ParseTagString(tagString, tagName, paramsAndValues);
+            path += "/" + tagName;
+        }
+        
+        // If closing tag
+        if (dataType == 1)
+            ParseTagString(tagString, tagName, paramsAndValues);
+        
+
+        // Call user specified function with params:
+        // 1 - data type, enum with information about current data type
+        // 2 - string with current data path
+        // 3 - tag name if in data stored tag
+        // 4 - data itself
+        func(dataType, path, tagName, paramsAndValues, it);
+
+        // Remove closing tag from path
+        if (dataType == 1)
+            path = path.substr(0, path.length() - 1 - tagName.length());
+
+        // Remove inline tag
+        if (dataType == 2)
+        {
+            path = path.substr(0, path.length() - 1 - tagName.length());
+        }
+    }
+}

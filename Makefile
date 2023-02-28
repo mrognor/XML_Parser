@@ -8,9 +8,13 @@ debug: bin/main
 release: CXXFLAGS += -D NDEBUG -O3
 release: bin/main
 
-bin/main: bin/XML_Parser.o bin/XML_Functions.o main.cpp
+bin/main: bin/libXML_Parser.a main.cpp
 	mkdir -p bin
-	g++ $(CXXFLAGS) bin/XML_Parser.o bin/XML_Functions.o main.cpp -o bin/main
+	g++ $(CXXFLAGS) main.cpp -I. -L./bin -lXML_Parser -o bin/main
+
+bin/libXML_Parser.a: bin/XML_Parser.o bin/XML_Functions.o
+	ar rc bin/libXML_Parser.a bin/XML_Parser.o bin/XML_Functions.o
+	ranlib bin/libXML_Parser.a
 
 bin/XML_Parser.o: XML_Parser.h XML_Parser.cpp
 	mkdir -p bin

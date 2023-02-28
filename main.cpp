@@ -1,6 +1,41 @@
 #include "XML_Parser.h"
 #include "XML_Functions.h"
 
+void f(DataType dataType, std::string path, std::string tagName, 
+std::map<std::string, std::string> paramsAndValues, std::string data)
+{
+    switch (dataType)
+    {
+    case openingTag:
+        std::cout << "Opening tag: " << tagName << " Path: " << path << std::endl;
+
+        if (!paramsAndValues.empty())
+        {
+            std::cout << "Params:" << std::endl;
+            for (auto it : paramsAndValues)
+                std::cout << "\tParam name: " << it.first << " Param value: " << it.second << std::endl; 
+        } 
+        break;
+
+    case inlineTag:
+        std::cout << "Inline tag: " << tagName << " Path: " << path << std::endl;
+        if (!paramsAndValues.empty())
+        {
+            std::cout << "Params:" << std::endl;
+            for (auto it : paramsAndValues)
+                std::cout << "\tParam name: " << it.first << " Param value: " << it.second << std::endl; 
+        } 
+        break;
+    
+    case closingTag:
+        std::cout << "Closing tag: " << tagName << " Path: " << path << std::endl;
+        break;
+    
+    case text:
+        std::cout << "Text: " << data << " Path: " << path << std::endl;
+        break;
+    }
+}
 
 int main()
 {
@@ -52,5 +87,37 @@ int main()
     else 
         std::cout << "false" << std::endl;
 
-    p.Find();
+    p.QueryData(f);
+
+    std::cout << std::endl;
+
+    p.QueryData([](DataType dataType, std::string path, std::string tagName, 
+        std::map<std::string, std::string> paramsAndValues, std::string data)
+        {
+            std::cout << "Data path: " << path << " Data: " << data << std::endl;
+        });
+
+    std::cout << std::endl;
+
+    
+    p.QueryData([](DataType dataType, std::string path, std::string tagName, 
+        std::map<std::string, std::string> paramsAndValues, std::string data)
+        {
+            static bool isTagE = false;
+
+            if (tagName == "tagE" && dataType == closingTag)
+            {
+                isTagE = false;
+                return;
+            }
+
+            if (tagName == "tagE" && dataType == openingTag)
+            {
+                isTagE = true;
+                return;
+            }
+
+            if (isTagE)
+                std::cout << data << std::endl;
+        });
 }

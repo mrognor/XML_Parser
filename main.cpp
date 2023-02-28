@@ -69,23 +69,15 @@ int main()
     // for (const auto& it : p.GetData())
     //     std::cout << it << std::endl;
 
-    // std::cout << std::endl;
-
-    // if (p.ValidateFile("xml_files/parsing_tests.xml"))
-    //     std::cout << "true" << std::endl;
-    // else 
-    //     std::cout << "false" << std::endl;
-
-    // for (const auto& it : p.GetData())
-    //     std::cout << it << std::endl;
-
-
-    // Line with xml specification ignoring and dont checking
     XmlParser p;
+
     if (p.ValidateFile("xml_files/parsing_tests.xml"))
         std::cout << "true" << std::endl;
     else 
         std::cout << "false" << std::endl;
+
+    for (const auto& it : p.GetData())
+        std::cout << it << std::endl;
 
     p.QueryData(f);
 
@@ -120,4 +112,6 @@ int main()
             if (isTagE)
                 std::cout << data << std::endl;
         });
+
+    // p.ValidateContainerWithStrings(p.GetData());
 }

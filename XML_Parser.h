@@ -24,13 +24,16 @@ class XmlParser
 private:
     std::list<std::string> Data;
 public:
-    const std::list<std::string>& GetData() { return Data; }
+    std::list<std::string>& GetData() { return Data; }
 
     bool ValidateFile(const std::string& fileName);
 
     bool ValidateString(const std::string& str);
 
-    bool ValidateVectorOfString(const std::vector<std::string>& vectorToValidate);
+    bool ValidateVectorOfStrings(const std::vector<std::string>& vectorToValidate);
+
+    template <class T>
+    bool ValidateContainerWithStrings(const T& containerToValidate);
 
     template <class T>
     void QueryData(T func);
@@ -103,4 +106,10 @@ void XmlParser::QueryData(T func)
             path = path.substr(0, path.length() - 1 - tagName.length());
         }
     }
+}
+
+template <class T>
+bool XmlParser::ValidateContainerWithStrings(const T& containerToValidate)
+{
+    return Validate(containerToValidate.begin(), containerToValidate.end(), Data);
 }

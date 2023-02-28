@@ -87,6 +87,15 @@ bool CheckString(const std::string& valueString);
 */
 bool ParseTagString(const std::string& tagString, std::string& tagName, std::map<std::string, std::string>& paramsAndValues);
 
+template <class T, class V>
+int Count(T where, V what)
+{
+    int count = 0;
+    for (const auto& it : where)
+        if (it == what) count++;
+    return count;
+}
+
 /*!
     This function is needed to check the container with xml data for validity
 

@@ -2,7 +2,7 @@
 #include "XML_Functions.h"
 
 void f(DataType dataType, std::string path, std::string tagName, 
-std::map<std::string, std::string> paramsAndValues, std::string data)
+std::map<std::string, std::string> paramsAndValues, std::list<std::string>::iterator data)
 {
     switch (dataType)
     {
@@ -32,7 +32,7 @@ std::map<std::string, std::string> paramsAndValues, std::string data)
         break;
     
     case text:
-        std::cout << "Text: " << data << " Path: " << path << std::endl;
+        std::cout << "Text: " << *data << " Path: " << path << std::endl;
         break;
     }
 }
@@ -79,39 +79,45 @@ int main()
     for (const auto& it : p.GetData())
         std::cout << it << std::endl;
 
-    p.QueryData(f);
+    // p.QueryData(f);
 
     std::cout << std::endl;
-
-    p.QueryData([](DataType dataType, std::string path, std::string tagName, 
-        std::map<std::string, std::string> paramsAndValues, std::string data)
-        {
-            std::cout << "Data path: " << path << " Data: " << data << std::endl;
-        });
-
-    std::cout << std::endl;
-
     
-    p.QueryData([](DataType dataType, std::string path, std::string tagName, 
-        std::map<std::string, std::string> paramsAndValues, std::string data)
+    p.QueryData([&p](DataType dataType, std::string path, std::string tagName, 
+        std::map<std::string, std::string> paramsAndValues, std::list<std::string>::iterator data)
         {
             static bool isTagE = false;
 
             if (tagName == "tagE" && dataType == closingTag)
             {
                 isTagE = false;
+                p.InsertData(data, {"<newTag> New tag text end </newTag>"});
                 return;
             }
 
             if (tagName == "tagE" && dataType == openingTag)
             {
                 isTagE = true;
+                data++;
+                p.InsertData(data, {"<newTag> New tag text start </newTag>"});
+                data--;
                 return;
             }
 
             if (isTagE)
-                std::cout << data << std::endl;
+                std::cout << *data << std::endl;
         });
 
-    std::cout << Validate(p.GetData().begin(), p.GetData().end()) << std::endl;
+    for (const auto& it : p.GetData())
+        std::cout << it << std::endl;
+
+    std::cout << std::endl;
+
+    p.WriteDataToFile("1.xml");
+    
+    /*!
+        ToDo list
+        \todo 1. Simple text after and before root tag
+    */ 
+    
 }

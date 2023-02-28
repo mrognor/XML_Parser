@@ -35,6 +35,11 @@ public:
     template <class T>
     bool ValidateContainerWithStrings(const T& containerToValidate);
 
+    // Insert data before iterator like in std
+    bool InsertData(std::list<std::string>::iterator posToInsertIt, std::list<std::string> listToInsert);
+
+    void WriteDataToFile(std::string fileName);
+    
     template <class T>
     void QueryData(T func);
 };
@@ -48,7 +53,7 @@ void XmlParser::QueryData(T func)
     DataType dataType;
     std::map<std::string, std::string> paramsAndValues;
 
-    for (const auto& it : Data)
+    for (std::list<std::string>::iterator it = Data.begin(); it != Data.end(); it++)
     {
         tagName.clear();
         dataType = empty;
@@ -56,19 +61,19 @@ void XmlParser::QueryData(T func)
         tagString.clear();
 
         // Is tag
-        if(it.length() >= 3 && it[0] == '<' && it[it.length() - 1] == '>')
+        if((*it).length() >= 3 && (*it)[0] == '<' && (*it)[(*it).length() - 1] == '>')
         {
             dataType = openingTag;
-            tagString = it.substr(1, it.length() - 2);
+            tagString = (*it).substr(1, (*it).length() - 2);
 
             // Closing tag
-            if (it.length() >= 4 && it[1] == '/')
+            if ((*it).length() >= 4 && (*it)[1] == '/')
             {
                 dataType = closingTag;
                 tagString = tagString.substr(1);
             }
             // Inline tag
-            if (it.length() >= 4 && it[it.length() - 2] == '/')
+            if ((*it).length() >= 4 && (*it)[(*it).length() - 2] == '/')
             {
                 dataType = inlineTag;
                 tagString = tagString.substr(0, tagString.length() - 1);

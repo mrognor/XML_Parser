@@ -24,7 +24,7 @@ bool XmlParser::ValidateFile(const std::string& fileName)
     std::istream_iterator<line> begin(fileToValidate);
     std::istream_iterator<line> end;
     
-    return Validate(begin, end, Data);
+    return Validate(begin, end, &Data);
 }
 
 bool XmlParser::ValidateString(const std::string& str)
@@ -35,5 +35,5 @@ bool XmlParser::ValidateString(const std::string& str)
 
 bool XmlParser::ValidateVectorOfStrings(const std::vector<std::string>& vectorToValidate)
 {
-    return Validate(vectorToValidate.begin(), vectorToValidate.end(), Data);
+    return Validate(vectorToValidate.begin(), vectorToValidate.end(), &Data);
 }

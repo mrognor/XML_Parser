@@ -97,9 +97,10 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
     \param[out] listWithAllData list to store all xml data from container
 */
 template<class T>
-bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
+bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
 {
-    listWithAllData.clear();
+    if (listWithAllData != nullptr)
+        listWithAllData->clear();
 
     // String to store all chars in tags
     std::string tagString;
@@ -205,8 +206,8 @@ bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
                 }
                 
                 // Add string between tag to list
-                if (!TrimString(betweenTagsString).empty())
-                    listWithAllData.push_back(TrimString(betweenTagsString));
+                if (!TrimString(betweenTagsString).empty() && listWithAllData != nullptr)
+                    listWithAllData->push_back(TrimString(betweenTagsString));
                     
                 betweenTagsString.clear();
                 continue;
@@ -262,7 +263,8 @@ bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
                     }
                 }
 
-                listWithAllData.push_back("<" + tagString + ">");
+                if (listWithAllData != nullptr)
+                    listWithAllData->push_back("<" + tagString + ">");
                 tagString.clear();
                 continue;
             }
@@ -276,7 +278,8 @@ bool Validate(T begin, T end, std::list<std::string>& listWithAllData)
         // Add non tag and non comment line to data list
         if (!isTagStringOpened && !isComment && !TrimString(betweenTagsString).empty())
         {
-            listWithAllData.push_back(TrimString(betweenTagsString));
+            if (listWithAllData != nullptr)
+                listWithAllData->push_back(TrimString(betweenTagsString));
             betweenTagsString.clear();
         }
 

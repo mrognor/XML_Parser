@@ -113,5 +113,5 @@ int main()
                 std::cout << data << std::endl;
         });
 
-    // p.ValidateContainerWithStrings(p.GetData());
+    std::cout << Validate(p.GetData().begin(), p.GetData().end()) << std::endl;
 }

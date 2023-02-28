@@ -111,5 +111,5 @@ void XmlParser::QueryData(T func)
 template <class T>
 bool XmlParser::ValidateContainerWithStrings(const T& containerToValidate)
 {
-    return Validate(containerToValidate.begin(), containerToValidate.end(), Data);
+    return Validate(containerToValidate.begin(), containerToValidate.end(), &Data);
 }

@@ -166,7 +166,8 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             }
 
             // Check if it is closing comment
-            if (*stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
+            if ((stringChar - 1) != (*xmlStringIt).begin() && (stringChar - 2) != (*xmlStringIt).begin() &&
+                *stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
             {
                 isComment = false;
 

@@ -294,6 +294,12 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
         // Add non tag and non comment line to data list
         if (!isTagStringOpened && !isComment && !TrimString(betweenTagsString).empty())
         {
+            if (tagStringsStack.size() == 0)
+            {
+                LOG("Text outside xml root on line number: " + std::to_string(lineNumber));
+                return false;
+            }
+
             if (listWithAllData != nullptr)
                 listWithAllData->push_back(TrimString(betweenTagsString));
             betweenTagsString.clear();

@@ -76,6 +76,8 @@ int main()
     else 
         std::cout << "false" << std::endl;
 
+    std::cout << std::endl;
+
     for (const auto& it : p.GetData())
         std::cout << it << std::endl;
 
@@ -107,20 +109,14 @@ int main()
                 return;
             }
 
-            if (isTagE)
+            if (isTagE && dataType != comment)
                 std::cout << *data << std::endl;
         });
+    
+    std::cout << std::endl;
 
     for (const auto& it : p.GetData())
         std::cout << it << std::endl;
 
-    std::cout << std::endl;
-
-    p.WriteDataToFile("bin/1.xml");
-    
-    /*!
-        ToDo list
-        \todo 1. Simple text after and before root tag
-    */ 
-    
+    p.WriteDataToFile("bin/1.xml");    
 }

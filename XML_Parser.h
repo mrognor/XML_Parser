@@ -16,7 +16,8 @@ enum DataType
     openingTag = 0,
     closingTag = 1,
     inlineTag = 2,
-    text = 3
+    text = 3,
+    comment = 4
 };
 
 class XmlParser
@@ -77,6 +78,11 @@ void XmlParser::QueryData(T func)
             {
                 dataType = inlineTag;
                 tagString = tagString.substr(0, tagString.length() - 1);
+            }
+            // Comment
+            if ((*it).length() >= 7 && (*it)[1] == '!' && (*it)[2] == '-' && (*it)[3] == '-')
+            {
+                dataType = comment;
             }
         }
         else 

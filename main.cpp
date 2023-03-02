@@ -88,6 +88,9 @@ int main()
         {
             static bool isTagE = false;
 
+            if (dataType == comment)
+                std::cout << "Comment: " << *data << std::endl;
+                
             if (tagName == "tagE" && dataType == closingTag)
             {
                 isTagE = false;

@@ -158,24 +158,30 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             }
 
             // Check if it is opening comment
-            if ((stringChar + 1) != (*xmlStringIt).end() && (stringChar + 2) != (*xmlStringIt).end() && (stringChar + 3) != (*xmlStringIt).end() &&
+            if ((stringChar + 1) != (*xmlStringIt).end() && (stringChar + 2) != (*xmlStringIt).end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
             {
                 isComment = true;
+                commentString += *stringChar;
                 continue;
             }
 
             // Check if it is closing comment
-            if ((stringChar - 1) != (*xmlStringIt).begin() && (stringChar - 2) != (*xmlStringIt).begin() &&
+            if ((stringChar - 1) != (*xmlStringIt).begin() &&
                 *stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
             {
                 isComment = false;
+                commentString += *stringChar;
 
                 if (commentString.substr(3, commentString.length() - 5).find("--") != -1)
                 {
                     LOG("The string \"--\" is not valid inside comments");
                     return false;
                 }
+
+                // Add comment to list
+                if(listWithAllData != nullptr && !commentString.empty())
+                    listWithAllData->push_back(commentString);
 
                 commentString.clear();
                 continue;
@@ -291,13 +297,6 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             if (listWithAllData != nullptr)
                 listWithAllData->push_back(TrimString(betweenTagsString));
             betweenTagsString.clear();
-        }
-
-        // Clear comment string if new line
-        if (isComment)
-        {
-            commentString.clear();
-            continue;
         }
     }
     

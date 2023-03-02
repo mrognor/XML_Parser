@@ -113,7 +113,7 @@ int main()
 
     std::cout << std::endl;
 
-    p.WriteDataToFile("1.xml");
+    p.WriteDataToFile("bin/1.xml");
     
     /*!
         ToDo list

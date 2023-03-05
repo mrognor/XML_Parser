@@ -1,42 +1,6 @@
 #include "XML_Parser.h"
 #include "XML_Functions.h"
 
-void f(DataType dataType, std::string path, std::string tagName, 
-std::map<std::string, std::string> paramsAndValues, std::list<std::string>::iterator data)
-{
-    switch (dataType)
-    {
-    case openingTag:
-        std::cout << "Opening tag: " << tagName << " Path: " << path << std::endl;
-
-        if (!paramsAndValues.empty())
-        {
-            std::cout << "Params:" << std::endl;
-            for (auto it : paramsAndValues)
-                std::cout << "\tParam name: " << it.first << " Param value: " << it.second << std::endl; 
-        } 
-        break;
-
-    case inlineTag:
-        std::cout << "Inline tag: " << tagName << " Path: " << path << std::endl;
-        if (!paramsAndValues.empty())
-        {
-            std::cout << "Params:" << std::endl;
-            for (auto it : paramsAndValues)
-                std::cout << "\tParam name: " << it.first << " Param value: " << it.second << std::endl; 
-        } 
-        break;
-    
-    case closingTag:
-        std::cout << "Closing tag: " << tagName << " Path: " << path << std::endl;
-        break;
-    
-    case text:
-        std::cout << "Text: " << *data << " Path: " << path << std::endl;
-        break;
-    }
-}
-
 int main()
 {
     // // Line with xml specification ignoring and dont checking
@@ -79,44 +43,15 @@ int main()
     std::cout << std::endl;
 
     for (const auto& it : p.GetData())
-        std::cout << it << std::endl;
+        std::cout << it.Path << " " << it.Data << std::endl;
 
-    // p.QueryData(f);
-
-    std::cout << std::endl;
-    
-    p.QueryData([&p](DataType dataType, std::string path, std::string tagName, 
-        std::map<std::string, std::string> paramsAndValues, std::list<std::string>::iterator data)
-        {
-            static bool isTagE = false;
-
-            if (dataType == comment)
-                std::cout << "Comment: " << *data << std::endl;
-                
-            if (tagName == "tagE" && dataType == closingTag)
-            {
-                isTagE = false;
-                p.InsertData(data, {"<newTag> New tag text end </newTag>"});
-                return;
-            }
-
-            if (tagName == "tagE" && dataType == openingTag)
-            {
-                isTagE = true;
-                data++;
-                p.InsertData(data, {"<newTag> New tag text start </newTag>"});
-                data--;
-                return;
-            }
-
-            if (isTagE && dataType != comment)
-                std::cout << *data << std::endl;
-        });
-    
     std::cout << std::endl;
 
     for (const auto& it : p.GetData())
-        std::cout << it << std::endl;
+    {
+        if (it.Path.find("/tagA/tagB/") != -1)
+            std::cout << it.Data << std::endl;
+    }
 
-    p.WriteDataToFile("bin/1.xml");    
+    std::cout << std::endl;
 }

@@ -172,9 +172,18 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
 
     // Find tag name
     std::string trimmedTagString = TrimString(tagString);
-    std::string tmpTagName = trimmedTagString.substr(0, trimmedTagString.find(" "));
 
-    // Check tag name validity and set pointer value if it is not nullptr
+    size_t firstSpacePos = trimmedTagString.find(' ');
+    size_t firstTabPos = trimmedTagString.find('\t');
+    std::string tmpTagName = trimmedTagString;
+
+    if (firstSpacePos != -1 && firstSpacePos < firstTabPos)
+        tmpTagName = trimmedTagString.substr(0, firstSpacePos);
+
+    if (firstTabPos != -1 && firstTabPos < firstSpacePos)
+        tmpTagName = trimmedTagString.substr(0, firstTabPos);
+
+    // Check tag name validity and set variable to it
     if (CheckTagAndParamName(tmpTagName))
         tagName = tmpTagName;
     else
@@ -185,11 +194,16 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
             
     
     // Check if it only tag name without params
-    if (tagString == tmpTagName)
+    if (trimmedTagString == tmpTagName)
         return true;
 
     // Substring without tag name
-    std::string trimmedParamsLine = TrimString(tagString.substr(tagString.find(" ")));
+    std::string trimmedParamsLine;
+    if (firstSpacePos != -1 && firstSpacePos < firstTabPos)
+        trimmedParamsLine = TrimString(trimmedTagString.substr(firstSpacePos));
+
+    if (firstTabPos != -1 && firstTabPos < firstSpacePos)
+        trimmedParamsLine = TrimString(trimmedTagString.substr(firstTabPos));
     
     // Variable to stere is setting parametr after "=" symbol
     bool isSettingParam = false;

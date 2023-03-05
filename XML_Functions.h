@@ -27,6 +27,25 @@ extern void (*LogFuncPtr)(std::string);
 
 /// \endcond
 
+enum XmlDataType
+{
+    empty = -1,
+    openingTag = 0,
+    closingTag = 1,
+    inlineTag = 2,
+    text = 3,
+    comment = 4
+};
+
+struct XmlData
+{
+    XmlDataType DataType;
+    std::string Path;
+    std::string TagName;
+    std::map<std::string, std::string> ParamsAndValues;
+    std::string Data;
+};
+
 /*!
     Function for setting the logging function
 
@@ -106,7 +125,7 @@ int Count(T where, V what)
     \param[out] listWithAllData list to store all xml data from container
 */
 template<class T>
-bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
+bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
 {
     if (listWithAllData != nullptr)
         listWithAllData->clear();
@@ -117,8 +136,8 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
     std::string betweenTagsString;
     // String to store comments
     std::string commentString;
-    // Stack with all opened but not closed tags
-    std::stack<std::string> tagStringsStack;
+    // List with all opened but not closed tags
+    std::list<std::string> tagStringsStackList;
     // Is string with tag name and params opened by "<" symbol
     bool isTagStringOpened = false;
     // Line number in file or number of element in vector 
@@ -167,21 +186,36 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             }
 
             // Check if it is closing comment
-            if ((stringChar - 1) != (*xmlStringIt).begin() &&
+            if (stringChar != (*xmlStringIt).begin() && (stringChar - 1) != (*xmlStringIt).begin() &&
                 *stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
             {
                 isComment = false;
                 commentString += *stringChar;
 
-                if (commentString.substr(3, commentString.length() - 5).find("--") != -1)
+                // Check if it is string "--" on comment
+                if (commentString.substr(4, commentString.length() - 7).find("--") != -1)
                 {
                     LOG("The string \"--\" is not valid inside comments");
                     return false;
                 }
 
-                // Add comment to list
+                // Add comment to XmlData list
                 if(listWithAllData != nullptr && !commentString.empty())
-                    listWithAllData->push_back(commentString);
+                {
+                    // Create XmlData object
+                    XmlData commentData;
+                    commentData.Data = commentString;
+                    commentData.DataType = comment;
+
+                    // Find path
+                    std::string path = "";
+                    for (auto it : tagStringsStackList)
+                        path = path + "/" + it;
+                    commentData.Path = path;
+
+                    // Store data
+                    listWithAllData->push_back(commentData);
+                }
 
                 commentString.clear();
                 continue;
@@ -198,7 +232,7 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             if (*stringChar == '<')
             {
                 // Check if it is second root element
-                if (tagStringsStack.size() == 0 && wasAtLeastOneTag)
+                if (tagStringsStackList.size() == 0 && wasAtLeastOneTag)
                 {
                     LOG("There can be only one root element in a file. New root element on line: " + std::to_string(lineNumber));
                     return false;
@@ -221,10 +255,24 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
                     return false;
                 }
                 
-                // Add string between tag to list
+                // Add string between tag to XmlData list
                 if (!TrimString(betweenTagsString).empty() && listWithAllData != nullptr)
-                    listWithAllData->push_back(TrimString(betweenTagsString));
-                    
+                {
+                    // Create XmlData object
+                    XmlData textData;
+                    textData.Data = TrimString(betweenTagsString);
+                    textData.DataType = text;
+
+                    // Find path
+                    std::string path = "";
+                    for (auto it : tagStringsStackList)
+                        path = path + "/" + it;
+                    textData.Path = path;
+
+                    // Store data
+                    listWithAllData->push_back(textData);
+                }
+
                 betweenTagsString.clear();
                 continue;
             }
@@ -233,31 +281,30 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             if (*stringChar == '>')
             {
                 isTagStringOpened = false;
+                std::string tagName;
+                std::map<std::string, std::string> paramsAndValues;
 
                 // Check if it is closing tag
                 if (tagString[0] == '/')
                 {
                     // Check if closing tag equals or not opening tag
-                    if (tagStringsStack.size() != 0 && TrimString(tagString.substr(1)) == tagStringsStack.top())
-                        tagStringsStack.pop();
+                    if (tagStringsStackList.size() != 0 && TrimString(tagString.substr(1)) == tagStringsStackList.back())
+                        tagStringsStackList.pop_back();
                     else 
                     {
-                        if (tagStringsStack.empty())
+                        if (tagStringsStackList.empty())
                         {
                             LOG("Closing not opened tag on line: " + std::to_string(lineNumber));
                         }
                         else
                         {
-                            LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStack.top());
+                            LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + *tagStringsStackList.end());
                         }
                         return false;
                     }
                 }
                 else
                 {
-                    std::string tagName;
-                    std::map<std::string, std::string> paramsAndValues;
-
                     // Check if it is not one line tag
                     if (tagString[tagString.length() - 1] != '/')
                     {
@@ -266,7 +313,7 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
                             LOG("Wrong tag name on line: " + std::to_string(lineNumber));
                             return false;
                         }
-                        tagStringsStack.push(tagName); // Add opening tag to stack
+                        tagStringsStackList.push_back(tagName); // Add opening tag to stack
                         wasAtLeastOneTag = true;
                     }
                     else // One line tag check
@@ -279,8 +326,56 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
                     }
                 }
 
+                // Add tag to XmlDataList
                 if (listWithAllData != nullptr)
-                    listWithAllData->push_back("<" + tagString + ">");
+                {
+                    // Create XmlData object
+                    XmlData tagData;
+                    
+                    // Find XmlData object type
+                    // Opening tag
+                    tagData.DataType = openingTag;
+                    // Closing tag
+                    if (tagString[0] == '/')
+                        tagData.DataType = closingTag;
+                    // Inline tag
+                    if (tagString[tagString.length() - 1] == '/')
+                        tagData.DataType = inlineTag;
+
+                    // Format raw data
+                    if (tagData.DataType == closingTag)
+                        tagData.Data = "<" + TrimString(tagString) + ">";
+                    else
+                    {
+                        tagData.Data = "<" + tagName;
+
+                        for (auto it : paramsAndValues)
+                            tagData.Data = tagData.Data + " " + it.first + "=\"" + it.second + "\"";
+
+                        tagData.Data += ">";
+                    }
+
+                    // Set XmlData object tag name and map with params and values
+                    tagData.ParamsAndValues = paramsAndValues;
+                    tagData.TagName = tagName;
+
+                    // Find path
+                    std::string path = "/";
+                    if (!tagStringsStackList.empty())
+                    {
+                        // Add all path elements except last
+                        for (auto it = tagStringsStackList.begin(); it != --tagStringsStackList.end(); it++)
+                            path = path + *it + "/" ;
+
+                        // Add last path element if it is closing tag
+                        if (tagData.DataType == closingTag)
+                            path = path + tagStringsStackList.back() + "/";
+                    }
+                    tagData.Path = path;
+                    
+                    // Store data
+                    listWithAllData->push_back(tagData);
+                }
                 tagString.clear();
                 continue;
             }
@@ -291,23 +386,46 @@ bool Validate(T begin, T end, std::list<std::string>* listWithAllData = nullptr)
             else betweenTagsString += *stringChar;
         }
 
+        // Add new line symbol to comment
+        if (isComment)
+        {
+            commentString += "\n";
+            continue;
+        }
+
         // Add non tag and non comment line to data list
         if (!isTagStringOpened && !isComment && !TrimString(betweenTagsString).empty())
         {
-            if (tagStringsStack.size() == 0)
+            if (tagStringsStackList.size() == 0)
             {
                 LOG("Text outside xml root on line number: " + std::to_string(lineNumber));
                 return false;
             }
 
-            if (listWithAllData != nullptr)
-                listWithAllData->push_back(TrimString(betweenTagsString));
+            // Add string between tag to XmlData list
+            if (!TrimString(betweenTagsString).empty() && listWithAllData != nullptr)
+            {
+                // Create XmlData object
+                XmlData textData;
+                textData.Data = TrimString(betweenTagsString);
+                textData.DataType = text;
+
+                // Find path
+                std::string path = "";
+                for (auto it : tagStringsStackList)
+                    path = path + "/" + it;
+                textData.Path = path;
+
+                // Store data
+                listWithAllData->push_back(textData);
+            }
+
             betweenTagsString.clear();
         }
     }
     
     // Check if it is some unclosed tags
-    if (!tagStringsStack.empty())
+    if (!tagStringsStackList.empty())
     {
         LOG("Dont closed tags")
         return false;

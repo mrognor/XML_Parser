@@ -45,6 +45,8 @@ struct XmlData
     std::map<std::string, std::string> ParamsAndValues;
     std::string Data;
 
+    XmlData() {}
+    XmlData(std::string data) : Data(data) {}
     operator std::string() const { return Data; }
     friend std::ostream& operator<< (std::ostream &out, const XmlData &data);
 };

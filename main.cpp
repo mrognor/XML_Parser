@@ -42,12 +42,26 @@ int main()
 
     std::cout << std::endl;
     
+    std::list<XmlData>::iterator beg, end;
+
     for (auto it = p.GetData().begin(); it != p.GetData().end(); it++)
     {
+        if (it->TagName == "tagC" && it->DataType == openingTag)
+        {
+            beg = ++it;
+            it--;
+        }
+
+        if (it->TagName == "tagC" && it->DataType == closingTag)
+            end = it;
+        
+
         if (it->TagName == "tagA" && it->DataType == closingTag)
             p.InsertData(it, {"<correctData> Correct text </correctData>"});           
     }
 
+    p.InsertData(beg, end, {"<addingTag>"}, {"</addingTag>"});
+    
     for (const auto& it : p.GetData())
         std::cout << it << std::endl;
 

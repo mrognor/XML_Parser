@@ -65,6 +65,24 @@ bool XmlParser::InsertData(const std::list<XmlData>::iterator& posToInsertIt, st
         return false;
 }
 
+bool XmlParser::InsertData(const std::list<XmlData>::iterator& firstPosToInsertIt, const std::list<XmlData>::iterator& secondPosToInsertIt, 
+    std::list<std::string> firstListToInsert, std::list<std::string> secondListToInsert)
+{
+    std::list<XmlData> listWithInsertData;
+
+    Data.insert(firstPosToInsertIt, firstListToInsert.begin(), firstListToInsert.end());
+    Data.insert(secondPosToInsertIt, secondListToInsert.begin(), secondListToInsert.end()); 
+
+    // Check if it appending valid data
+    if (Validate(Data.begin(), Data.end(), &listWithInsertData))
+    {
+        Data = listWithInsertData;
+        return true;
+    }
+    else
+        return false;
+}
+
 bool XmlParser::WriteDataToFile(std::string fileName)
 {
     std::ofstream file(fileName.c_str());

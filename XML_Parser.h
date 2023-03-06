@@ -40,6 +40,11 @@ public:
     // Insert data before iterator like in std
     bool InsertData(const std::list<XmlData>::iterator& posToInsertIt, std::list<std::string> listToInsert);
 
+    // Insert data before iterator like in std
+    // Warning, data copieng. May end your RAM.
+    bool InsertData(const std::list<XmlData>::iterator& firstPosToInsertIt, const std::list<XmlData>::iterator& secondPosToInsertIt, 
+    std::list<std::string> firstListToInsert, std::list<std::string> secondListToInsert);
+
     bool WriteDataToFile(std::string fileName);
 };
 

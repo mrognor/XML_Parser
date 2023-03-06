@@ -212,7 +212,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
 
                     // Find path
                     std::string path = "";
-                    for (auto it : tagStringsStackList)
+                    for (const auto& it : tagStringsStackList)
                         path = path + "/" + it;
                     commentData.Path = path;
 
@@ -268,7 +268,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
 
                     // Find path
                     std::string path = "";
-                    for (auto it : tagStringsStackList)
+                    for (const auto& it : tagStringsStackList)
                         path = path + "/" + it;
                     textData.Path = path;
 
@@ -301,7 +301,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                         }
                         else
                         {
-                            LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + *tagStringsStackList.end());
+                            LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStackList.back());
                         }
                         return false;
                     }
@@ -316,6 +316,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                             LOG("Wrong tag name on line: " + std::to_string(lineNumber));
                             return false;
                         }
+
                         tagStringsStackList.push_back(tagName); // Add opening tag to stack
                         wasAtLeastOneTag = true;
                     }
@@ -352,8 +353,11 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                     {
                         tagData.Data = "<" + tagName;
 
-                        for (auto it : paramsAndValues)
+                        for (const auto& it : paramsAndValues)
                             tagData.Data = tagData.Data + " " + it.first + "=\"" + it.second + "\"";
+                        
+                        if (tagData.DataType == inlineTag)
+                            tagData.Data += "/";
 
                         tagData.Data += ">";
                     }
@@ -415,7 +419,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
 
                 // Find path
                 std::string path = "";
-                for (auto it : tagStringsStackList)
+                for (const auto& it : tagStringsStackList)
                     path = path + "/" + it;
                 textData.Path = path;
 

@@ -38,40 +38,28 @@ bool XmlParser::ValidateVectorOfStrings(const std::vector<std::string>& vectorTo
     return Validate(vectorToValidate.begin(), vectorToValidate.end(), &Data);
 }
 
-// bool XmlParser::InsertData(std::list<std::string>::iterator posToInsertIt, std::list<std::string> listToInsert)
-// {
-//     // Insert user added strings to Data list
-//     auto newStart = Data.insert(posToInsertIt, listToInsert.begin(), listToInsert.end());
+bool XmlParser::InsertData(const std::list<XmlData>::iterator& posToInsertIt, std::list<std::string> listToInsert)
+{
+    std::list<XmlData> listWithInsertData;
+    listToInsert.push_front("<VALIDATION_ROOT_TAG>");
+    listToInsert.push_back("</VALIDATION_ROOT_TAG>");
 
-//     // Check if it is valid XML document
-//     if (Validate(Data.begin(), Data.end()))
-//     {
-//         // Remove user added strings from data list to properly parse it to list with strings
-//         Data.erase(newStart, posToInsertIt);
-        
-//         // Add validation tags to insert list to check its validity inside tags
-//         listToInsert.push_front("<ValidationTag>");
-//         listToInsert.push_back("</ValidationTag>");
-        
-//         // Properly parsed user added list with strings
-//         std::list<std::string> parsedListToInsert;
-//         // Parse user added list
-//         Validate(listToInsert.begin(), listToInsert.end(), &parsedListToInsert);
+    // Check if it appending valid data
+    if (Validate(listToInsert.begin(), listToInsert.end(), &listWithInsertData))
+    {
+        for (auto it = ++listWithInsertData.begin(); it != --listWithInsertData.end(); it++)
+        {
+            std::string properPath = it->Path.substr(it->Path.find('/') + 1);
+            properPath = properPath.substr(properPath.find('/') + 1);
+            it->Path = posToInsertIt->Path + properPath;
+        }
 
-//         // Remove validation tags
-//         parsedListToInsert.pop_back();
-//         parsedListToInsert.pop_front();
-
-//         Data.insert(posToInsertIt, parsedListToInsert.begin(), parsedListToInsert.end());
-
-//         return true;
-//     }
-//     else
-//     {
-//         Data.erase(newStart, posToInsertIt);
-//         return false;
-//     }
-// }
+        Data.insert(posToInsertIt, ++listWithInsertData.begin(), --listWithInsertData.end());
+        return true;
+    }
+    else
+        return false;
+}
 
 bool XmlParser::WriteDataToFile(std::string fileName)
 {
@@ -88,14 +76,14 @@ bool XmlParser::WriteDataToFile(std::string fileName)
     {
         int tabCount = Count(it.Path, '/');
         
-        if (it.DataType != text && it.DataType != inlineTag)
+        if (it.DataType != text)
             tabCount--;
 
         for (int i = 0; i < tabCount; i++)
             file << '\t';
         file << it.Data << std::endl;
     }
-
+    
     file.close();
     return true;
 }

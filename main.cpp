@@ -43,12 +43,15 @@ int main()
     std::cout << std::endl;
 
     for (const auto& it : p.GetData())
-        std::cout << (std::string)it << std::endl;
+        std::cout << it << std::endl;
 
     std::cout << std::endl;
+    
+    for (auto it = p.GetData().begin(); it != p.GetData().end(); it++)
+    {
+        if (it->TagName == "tagA" && it->DataType == closingTag)
+            p.InsertData(it, {"<correctData> Correct text </correctData>"});           
+    }
 
-    if (Validate(p.GetData().begin(), p.GetData().end()))
-        std::cout << "true" << std::endl;
-    else 
-        std::cout << "false" << std::endl;
+    p.WriteDataToFile("bin/1.xml");
 }

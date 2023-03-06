@@ -8,6 +8,45 @@ void SetLogFunc(void (*logFuncPtr)(std::string))
     LogFuncPtr = logFuncPtr; 
 }
 
+std::ostream& operator<< (std::ostream &out, const XmlData& data)
+{
+    out << "Data: " << data.Data << "\t";
+    switch (data.DataType)
+    {
+    case openingTag:
+        out << "Data type: openingTag\tPath: " << data.Path << "\tTag name: "<< data.TagName;
+        if (!data.ParamsAndValues.empty())
+        {
+            out << "\tParams: ";
+            for (const std::pair<std::string, std::string>& it : data.ParamsAndValues)
+                out << "Param: " << it.first << " Value: " << it.second << "; ";
+        }
+        break;
+
+    case inlineTag:
+        out << "Data type: inlineTag\tPath: " << data.Path << "\tTag name: "<< data.TagName;
+        if (!data.ParamsAndValues.empty())
+        {
+            out << "\tParams: ";
+            for (const std::pair<std::string, std::string>& it : data.ParamsAndValues)
+                out << "Param: " << it.first << " Value: " << it.second << "; ";
+        }
+        break;
+
+    case closingTag:
+        out << "Data type: closingTag\tPath: " << data.Path << "\tTag name: "<< data.TagName;
+        break;
+    
+    case text:
+        out << "Data type: text\tPath: " << data.Path << "\tText: "<< data.Data;
+        break;
+    
+    case comment:
+        out << "Data type: comment\tPath: " << data.Path << "\tText: "<< data.Data;
+        break;
+    } 
+    return out;
+}
 
 std::vector<std::string> Split(const std::string& stringToSplit, const std::string& splitterString)
 {

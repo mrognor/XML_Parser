@@ -38,7 +38,7 @@ public:
     bool ValidateContainerWithStrings(const T& containerToValidate);
 
     // Insert data before iterator like in std
-    // bool InsertData(std::list<std::string>::iterator posToInsertIt, std::list<std::string> listToInsert);
+    bool InsertData(const std::list<XmlData>::iterator& posToInsertIt, std::list<std::string> listToInsert);
 
     bool WriteDataToFile(std::string fileName);
 };

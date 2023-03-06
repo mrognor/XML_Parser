@@ -46,7 +46,9 @@ struct XmlData
     std::string Data;
 
     operator std::string() const { return Data; }
+    friend std::ostream& operator<< (std::ostream &out, const XmlData &data);
 };
+
 
 /*!
     Function for setting the logging function
@@ -213,9 +215,9 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                     // Find path
                     if (isPathSaving)
                     {
-                        std::string path = "";
+                        std::string path = "/";
                         for (const auto& it : tagStringsStackList)
-                            path = path + "/" + it;
+                            path = path + it + "/";
                         commentData.Path = path;
                     }
 
@@ -272,9 +274,9 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                     // Find path
                     if (isPathSaving)
                     {
-                        std::string path = "";
+                        std::string path = "/";
                         for (const auto& it : tagStringsStackList)
-                            path = path + "/" + it;
+                            path = path + it + "/";
                         textData.Path = path;
                     }
 
@@ -298,7 +300,10 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                 {
                     // Check if closing tag equals or not opening tag
                     if (tagStringsStackList.size() != 0 && TrimString(tagString.substr(1)) == tagStringsStackList.back())
+                    {
+                        tagName = tagStringsStackList.back();
                         tagStringsStackList.pop_back();
+                    }
                     else 
                     {
                         if (tagStringsStackList.empty())
@@ -383,7 +388,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                                 path = path + *it + "/" ;
 
                             // Add last path element if it is closing tag
-                            if (tagData.DataType == closingTag)
+                            if (tagData.DataType == closingTag || tagData.DataType == inlineTag)
                                 path = path + tagStringsStackList.back() + "/";
                         }
                         tagData.Path = path;
@@ -429,9 +434,9 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                 // Find path
                 if (isPathSaving)
                 {
-                    std::string path = "";
+                    std::string path = "/";
                     for (const auto& it : tagStringsStackList)
-                        path = path + "/" + it;
+                        path = path + it + "/";
                     textData.Path = path;
                 }
 

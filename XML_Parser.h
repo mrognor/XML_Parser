@@ -14,7 +14,18 @@ class XmlParser
 {
 private:
     std::list<XmlData> Data;
+    bool IsPathSaving = true;
 public:
+    /*!
+        \brief This function is needed to set the path of each tag to be saved.
+        
+        Disabling the saving of the tag path is necessary to save space in RAM, 
+        since the path takes up more space than the tag name, 
+        storing the path spends a lot of memory.
+        At the same time it is very easy to determine the path during tag processing
+    */
+    void SetPathSaving(bool isPathSaving) { IsPathSaving = isPathSaving; }
+
     std::list<XmlData>& GetData() { return Data; }
 
     bool ValidateFile(const std::string& fileName);

@@ -127,7 +127,7 @@ int Count(T where, V what)
     \param[out] listWithAllData list to store all xml data from container
 */
 template<class T>
-bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
+bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, bool isPathSaving = true)
 {
     if (listWithAllData != nullptr)
         listWithAllData->clear();
@@ -211,10 +211,13 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                     commentData.DataType = comment;
 
                     // Find path
-                    std::string path = "";
-                    for (const auto& it : tagStringsStackList)
-                        path = path + "/" + it;
-                    commentData.Path = path;
+                    if (isPathSaving)
+                    {
+                        std::string path = "";
+                        for (const auto& it : tagStringsStackList)
+                            path = path + "/" + it;
+                        commentData.Path = path;
+                    }
 
                     // Store data
                     listWithAllData->push_back(commentData);
@@ -267,10 +270,13 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                     textData.DataType = text;
 
                     // Find path
-                    std::string path = "";
-                    for (const auto& it : tagStringsStackList)
-                        path = path + "/" + it;
-                    textData.Path = path;
+                    if (isPathSaving)
+                    {
+                        std::string path = "";
+                        for (const auto& it : tagStringsStackList)
+                            path = path + "/" + it;
+                        textData.Path = path;
+                    }
 
                     // Store data
                     listWithAllData->push_back(textData);
@@ -367,19 +373,22 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                     tagData.TagName = tagName;
 
                     // Find path
-                    std::string path = "/";
-                    if (!tagStringsStackList.empty())
+                    if (isPathSaving)
                     {
-                        // Add all path elements except last
-                        for (auto it = tagStringsStackList.begin(); it != --tagStringsStackList.end(); it++)
-                            path = path + *it + "/" ;
+                        std::string path = "/";
+                        if (!tagStringsStackList.empty())
+                        {
+                            // Add all path elements except last
+                            for (auto it = tagStringsStackList.begin(); it != --tagStringsStackList.end(); it++)
+                                path = path + *it + "/" ;
 
-                        // Add last path element if it is closing tag
-                        if (tagData.DataType == closingTag)
-                            path = path + tagStringsStackList.back() + "/";
+                            // Add last path element if it is closing tag
+                            if (tagData.DataType == closingTag)
+                                path = path + tagStringsStackList.back() + "/";
+                        }
+                        tagData.Path = path;
                     }
-                    tagData.Path = path;
-                    
+
                     // Store data
                     listWithAllData->push_back(tagData);
                 }
@@ -418,10 +427,13 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
                 textData.DataType = text;
 
                 // Find path
-                std::string path = "";
-                for (const auto& it : tagStringsStackList)
-                    path = path + "/" + it;
-                textData.Path = path;
+                if (isPathSaving)
+                {
+                    std::string path = "";
+                    for (const auto& it : tagStringsStackList)
+                        path = path + "/" + it;
+                    textData.Path = path;
+                }
 
                 // Store data
                 listWithAllData->push_back(textData);

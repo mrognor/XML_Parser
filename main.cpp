@@ -43,16 +43,12 @@ int main()
     std::cout << std::endl;
 
     for (const auto& it : p.GetData())
-        std::cout << it.Path << " " << it.Data << std::endl;
+        std::cout << (std::string)it << std::endl;
 
     std::cout << std::endl;
 
-    for (const auto& it : p.GetData())
-    {
-        if (it.Path.find("/tagA/tagB/") != -1)
-            std::cout << it.Data << std::endl;
-    }
-
-    std::cout << std::endl;
-    p.WriteDataToFile("bin/1.xml");
+    if (Validate(p.GetData().begin(), p.GetData().end()))
+        std::cout << "true" << std::endl;
+    else 
+        std::cout << "false" << std::endl;
 }

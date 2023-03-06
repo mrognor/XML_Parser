@@ -44,6 +44,8 @@ struct XmlData
     std::string TagName;
     std::map<std::string, std::string> ParamsAndValues;
     std::string Data;
+
+    operator std::string() const { return Data; }
 };
 
 /*!
@@ -153,13 +155,14 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
     for (auto xmlStringIt = begin; xmlStringIt != end; xmlStringIt++)
     {
         lineNumber++;
+        std::string xmlString = (std::string)(*xmlStringIt);
 
         // Ignore line with xml specification
         if (lineNumber == 1)
         {
-            std::string trimString = TrimString((*xmlStringIt), false);
-            // Check if it is starts from "<&" string
-            if((*xmlStringIt).length() >= 2 && (*xmlStringIt)[0] == '<' && (*xmlStringIt)[1] == '?')
+            std::string trimString = TrimString(xmlString, false);
+            // Check if it is starts from "<?" string
+            if(xmlString.length() >= 2 && xmlString[0] == '<' && xmlString[1] == '?')
             {
                 isSpecString = true;
                 continue;
@@ -167,7 +170,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
         }
 
         // For loop by string
-        for (auto stringChar = (*xmlStringIt).begin(); stringChar != (*xmlStringIt).end(); stringChar++)
+        for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); stringChar++)
         {
             // Check if it is closing spec string
             if (isSpecString && *stringChar == '>' && *(stringChar - 1) == '?')
@@ -177,7 +180,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
             }
 
             // Check if it is opening comment
-            if ((stringChar + 1) != (*xmlStringIt).end() && (stringChar + 2) != (*xmlStringIt).end() &&
+            if ((stringChar + 1) != xmlString.end() && (stringChar + 2) != xmlString.end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
             {
                 isComment = true;
@@ -186,7 +189,7 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr)
             }
 
             // Check if it is closing comment
-            if (stringChar != (*xmlStringIt).begin() && (stringChar - 1) != (*xmlStringIt).begin() &&
+            if (stringChar != xmlString.begin() && (stringChar - 1) != xmlString.begin() &&
                 *stringChar == '>' && *(stringChar - 1) == '-' && *(stringChar - 2) == '-')
             {
                 isComment = false;

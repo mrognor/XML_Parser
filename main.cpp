@@ -54,4 +54,5 @@ int main()
     }
 
     std::cout << std::endl;
+    p.WriteDataToFile("bin/1.xml");
 }

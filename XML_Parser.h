@@ -29,7 +29,7 @@ public:
     // Insert data before iterator like in std
     // bool InsertData(std::list<std::string>::iterator posToInsertIt, std::list<std::string> listToInsert);
 
-    void WriteDataToFile(std::string fileName);
+    bool WriteDataToFile(std::string fileName);
 };
 
 

@@ -73,27 +73,29 @@ bool XmlParser::ValidateVectorOfStrings(const std::vector<std::string>& vectorTo
 //     }
 // }
 
-void XmlParser::WriteDataToFile(std::string fileName)
+bool XmlParser::WriteDataToFile(std::string fileName)
 {
     std::ofstream file(fileName.c_str());
 
     if(!file.is_open())
     {
         LOG("Failed to open file to write");
-        return;
+        file.close();
+        return false;
     }
 
-    // QueryData([&file](XmlDataType dataType, std::string path, std::string tagName, 
-    //     std::map<std::string, std::string> paramsAndValues, std::list<std::string>::iterator data)
-    // {
-    //     int shift = Count(path, '/');
+    for (const auto& it : Data)
+    {
+        int tabCount = Count(it.Path, '/');
         
-    //     if (!tagName.empty())
-    //         shift--;
+        if (it.DataType != text && it.DataType != inlineTag)
+            tabCount--;
 
-    //     for (int i = 0; i < shift; i++)
-    //         file << "\t";
-            
-    //     file << *data << std::endl;
-    // });
+        for (int i = 0; i < tabCount; i++)
+            file << '\t';
+        file << it.Data << std::endl;
+    }
+
+    file.close();
+    return true;
 }

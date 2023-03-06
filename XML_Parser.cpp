@@ -51,6 +51,10 @@ bool XmlParser::InsertData(const std::list<XmlData>::iterator& posToInsertIt, st
         {
             std::string properPath = it->Path.substr(it->Path.find('/') + 1);
             properPath = properPath.substr(properPath.find('/') + 1);
+            
+            if (posToInsertIt->DataType == closingTag)
+                properPath = properPath + posToInsertIt->TagName + "/";
+            
             it->Path = posToInsertIt->Path + properPath;
         }
 
@@ -75,11 +79,8 @@ bool XmlParser::WriteDataToFile(std::string fileName)
     for (const auto& it : Data)
     {
         int tabCount = Count(it.Path, '/');
-        
-        if (it.DataType != text)
-            tabCount--;
 
-        for (int i = 0; i < tabCount; i++)
+        for (int i = 1; i < tabCount; i++)
             file << '\t';
         file << it.Data << std::endl;
     }

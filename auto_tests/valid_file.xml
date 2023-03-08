@@ -1,0 +1,93 @@
+<?xml 
+version = "1.0" 
+encoding	=	"UTF-8"
+?>
+
+<!-- Comment test 1 -->
+<!-- Comment test 2
+-->
+<!-- 
+Comment test 3
+-->
+<!-- 
+Comment test 4
+-
+-
+-
+-->
+<!-- Comment 
+test 5-->
+
+<tagA>
+	<tag._-123> </tag._-123> <!-- Tag name validity -->
+	<tagB > </tagB  ><!-- Space after tag name -->
+	<tagC	> </tagC		> <!-- Tab after tag name -->
+	<tagD	 > </tagD		  > <!-- Tab and space after tag name -->
+	<tagE 	> </tagE  		> <!-- Space and tab after tag name -->
+	
+	<tagF
+></tagF  <!-- Closing tag at new line with space -->
+ >
+
+	<tagG
+></tagG  <!-- Closing tag at new line with tab -->
+	>
+	
+	<tagH param1="1"
+param2="2"	
+ param3="3" 
+	param4="4"
+	 param5="5"
+ 
+	
+
+	param6 ="6"
+	param7 = "7"
+	param8	="8"
+	param9	= "9"
+	param10 	=	 "10"
+	param11		= 		 "11"
+	param12 =
+"12"
+	param13 =
+ "13"
+	param14 =
+	"14"
+	param15
+= "15"
+	param16
+ = "16"
+	param17
+	= "17"
+	param18
+	=
+"18"
+	param19
+	=
+ "19"
+	param20
+	=
+	"20"
+	param21
+	
+	=
+	
+	"21"> </tagH> <!-- Params -->
+	
+	<inlineTag1/> <!-- Inline tag -->
+	<inlineTag2 /> <!-- Inline tag with space -->
+	<inlineTag3	/> <!-- Inline tag with tab -->
+	<inlineTag4 	/> <!-- Inline tag with space and tab -->
+	<inlineTag5	 /> <!-- Inline tag with tab and space -->
+	<inlineTag6 param1 = "1"/> <!-- Inline tag with param-->
+	
+	<tagI> Some
+simple
+ data
+	in
+		side
+tag</tagI>
+<tagJ>
+Text
+</tagJ>
+</tagA>

@@ -6,4 +6,4 @@ cmake ..
 
 cd ..
 
-xcopy xml_files\ build\xml_files /I
+xcopy xml_files\ build\xml_files /I /Y

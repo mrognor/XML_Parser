@@ -166,7 +166,8 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
         {
             std::string trimString = TrimString(xmlString, false);
             // Check if it is starts from "<?" string
-            if(xmlString.length() >= 2 && xmlString[0] == '<' && xmlString[1] == '?')
+            if(xmlString.length() >= 5 && xmlString[0] == '<' && xmlString[1] == '?' && xmlString[2] == 'x' && 
+            xmlString[3] == 'm' && xmlString[4] == 'l')
             {
                 isSpecString = true;
                 continue;

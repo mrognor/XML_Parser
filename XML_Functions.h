@@ -183,6 +183,10 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                 continue;
             }
 
+            // Skip logic if it is spec string
+            if (isSpecString)
+                continue;
+
             // Check if it is opening comment
             if ((stringChar + 1) != xmlString.end() && (stringChar + 2) != xmlString.end() &&
             *stringChar == '<' && *(stringChar + 1) == '!' && *(stringChar + 2) == '-' && *(stringChar + 3) == '-')
@@ -408,6 +412,10 @@ bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, boo
                 tagString += *stringChar;
             else betweenTagsString += *stringChar;
         }
+
+        // Skip logic if it is spec string
+        if (isSpecString)
+            continue;
 
         // Add new line symbol to comment
         if (isComment)

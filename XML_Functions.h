@@ -29,6 +29,7 @@ extern void (*LogFuncPtr)(std::string);
 
 namespace xmlp
 {
+    /// Struct to store xml data type inside list with xml data
     enum XmlDataType
     {
         empty = -1,
@@ -39,12 +40,19 @@ namespace xmlp
         comment = 4
     };
 
+    /// Struct to store all required information about xml data  
     struct XmlData
     {
+        /// Data type in the structure
         XmlDataType DataType;
+        /// Data path in xml data or file
         std::string Path;
+        /// The name of the tag. The string is empty if the data type is not a tag
         std::string TagName;
+        /// \brief Map with pairs of keys and values, where the key is the name of the tag parameter, and the value is the tag value. 
+        /// Map let if the data type is not equal to the opening tag or inline tag
         std::map<std::string, std::string> ParamsAndValues;
+        /// Raw xml data
         std::string Data;
 
         XmlData() {}
@@ -87,6 +95,7 @@ namespace xmlp
         If it is valid, it will return true, otherwise false
 
         \param[in] tagString string with tag name or tag parametr name
+        \param[in] isTagName boolean variable to indicate that the tag or parameter name should be checked
 
         \return Return true if this string can be valid tag name or parametr name, return false otherwise
     */
@@ -114,6 +123,11 @@ namespace xmlp
     */
     bool ParseTagString(const std::string& tagString, std::string& tagName, std::map<std::string, std::string>& paramsAndValues);
 
+    /*!
+        \brief Template function for checking the number of occurrences of what in where
+
+        \warning The where object must be iterable, i.e. it must have the begin and end functions
+    */
     template <class T, class V>
     int Count(T where, V what)
     {
@@ -130,7 +144,9 @@ namespace xmlp
 
         \param[in] begin container start
         \param[in] end container end
-        \param[out] listWithAllData list to store all xml data from container
+        \param[out] listWithAllData list for storing all data in a container. By default, the variable is nullptr and no data is saved.
+        \param[in] isPathSaving boolean variable to indicate whether to save the data path in the list. 
+        It is necessary because saving the path requires a lot of additional memory, and determining the path during list processing is quite simple
     */
     template<class T>
     bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, bool isPathSaving = true)
@@ -210,6 +226,8 @@ namespace xmlp
                     if (commentString.substr(4, commentString.length() - 7).find("--") != -1)
                     {
                         LOG("The string \"--\" is not valid inside comments");
+                        if (listWithAllData != nullptr)
+                            listWithAllData->clear();
                         return false;
                     }
 
@@ -252,6 +270,8 @@ namespace xmlp
                     if (tagStringsStackList.size() == 0 && wasAtLeastOneTag)
                     {
                         LOG("There can be only one root element in a file. New root element on line: " + std::to_string(lineNumber));
+                        if (listWithAllData != nullptr)
+                            listWithAllData->clear();
                         return false;
                     }
 
@@ -259,6 +279,8 @@ namespace xmlp
                     if (isTagStringOpened)
                     {
                         LOG("Opened new tag without closing previous on line: " + std::to_string(lineNumber));
+                        if (listWithAllData != nullptr)
+                            listWithAllData->clear();
                         return false;
                     }
 
@@ -269,6 +291,8 @@ namespace xmlp
                     if (!CheckString(trimmedValueString))
                     {
                         LOG("Invalid symbol on line: " + std::to_string(lineNumber));
+                        if (listWithAllData != nullptr)
+                            listWithAllData->clear();
                         return false;
                     }
                     
@@ -323,6 +347,8 @@ namespace xmlp
                             {
                                 LOG("Closing wrong tag on line: " + std::to_string(lineNumber) + " Expected: " + tagStringsStackList.back());
                             }
+                            if (listWithAllData != nullptr)
+                                listWithAllData->clear();
                             return false;
                         }
                     }
@@ -334,6 +360,8 @@ namespace xmlp
                             if (!ParseTagString(tagString, tagName, paramsAndValues))
                             {
                                 LOG("Wrong tag name on line: " + std::to_string(lineNumber));
+                                if (listWithAllData != nullptr)
+                                    listWithAllData->clear();
                                 return false;
                             }
 
@@ -345,6 +373,8 @@ namespace xmlp
                             if (!ParseTagString(tagString.substr(0, tagString.length() - 1), tagName, paramsAndValues))
                             {
                                 LOG("Wrong tag name on line: " + std::to_string(lineNumber));
+                                if (listWithAllData != nullptr)
+                                    listWithAllData->clear();
                                 return false;
                             }
                         }
@@ -433,6 +463,8 @@ namespace xmlp
                 if (tagStringsStackList.size() == 0)
                 {
                     LOG("Text outside xml root on line number: " + std::to_string(lineNumber));
+                    if (listWithAllData != nullptr)
+                        listWithAllData->clear();
                     return false;
                 }
 
@@ -465,6 +497,8 @@ namespace xmlp
         if (!tagStringsStackList.empty())
         {
             LOG("Dont closed tags")
+            if (listWithAllData != nullptr)
+                listWithAllData->clear();
             return false;
         }
         else

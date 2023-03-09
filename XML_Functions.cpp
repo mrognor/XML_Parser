@@ -108,7 +108,7 @@ std::string TrimString(const std::string& str, bool isFromLeft, bool isFromRight
 }
 
 
-bool CheckTagAndParamName(const std::string& tagString)
+bool CheckTagOrParamName(const std::string& tagString, bool isTagName)
 {
     if (tagString == "")
     {
@@ -116,10 +116,17 @@ bool CheckTagAndParamName(const std::string& tagString)
         return false;
     }
 
-    // Check first symbol on string
-    if ((isalpha(tagString[0]) || isalnum(tagString[0]) || tagString[0] == '_') == false)
+    // Check first symbol on tag string
+    if (isTagName && !isalpha(tagString[0]))
     {
-        LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in tag or param name");
+        LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in tag name");
+        return false;    
+    }
+
+    // Check first symbol on param string
+    if (!isTagName && !(tagString[0] == '_' || isalpha(tagString[0])))
+    {
+        LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in param name");
         return false;
     }
 
@@ -223,7 +230,7 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
         tmpTagName = trimmedTagString.substr(0, firstTabPos);
 
     // Check tag name validity and set variable to it
-    if (CheckTagAndParamName(tmpTagName))
+    if (CheckTagOrParamName(tmpTagName, true))
         tagName = tmpTagName;
     else
     {
@@ -270,7 +277,7 @@ bool ParseTagString(const std::string& tagString, std::string& tagName, std::map
             paramsCounter++;
             lastString = "";
 
-            if (!CheckTagAndParamName(paramName))
+            if (!CheckTagOrParamName(paramName, false))
             {
                 LOG("Wrong tag or parametr name");
                 return false;

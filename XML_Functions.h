@@ -88,7 +88,7 @@ std::string TrimString(const std::string& str, bool isFromLeft = true, bool isFr
 
     \return Return true if this string can be valid tag name or parametr name, return false otherwise
 */
-bool CheckTagAndParamName(const std::string& tagString);
+bool CheckTagOrParamName(const std::string& tagString, bool isTagName);
 
 /*!
     This function checks the parameter value or strings between tags for validity. 

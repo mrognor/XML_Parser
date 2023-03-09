@@ -5,9 +5,9 @@ void log(std::string) {}
 
 int main()
 {
-    XmlParser p;
+    xmlp::XmlParser p;
     
-    SetLogFunc(log);
+    xmlp::SetLogFunc(log);
 
     std::cout << "Testing started!" << std::endl;
     std::cout << "Valid file check: ";

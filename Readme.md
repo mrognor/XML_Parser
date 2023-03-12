@@ -1,4 +1,8 @@
 \mainpage
+
+[Documentation available here](https://mrognor.github.io/XML_Parser_Documentation/doc/html/index.html)
+
+# Limitations
 1. Tag with xml specification ignoring
 2. XML DTD not supporting
 
@@ -68,7 +72,7 @@ The simplest way to process data is a regular for loop
     }
 ```
 Each element of the list with xml data contains the following information:
-    * DataType - The data type in the current element. For more information see XmlDataType <span style="color:red">ДОБАВЬ ЗДЕСЬ ССЫЛКУ</span>.
+    * DataType - The data type in the current element. For more information see [XmlDataType](https://mrognor.github.io/XML_Parser_Documentation/doc/html/namespacexmlp.html#a7dfdf690ac1440f989a5f1321770484e)
     * Path - Data path. Format: /path/to/data
     * TagName - Tag name, if the list item stores a tag, if the list item does not store a tag, then this variable is empty
     * ParamsAndValues - Map, where the keys are tag parameters, and the values of the keys are the values of the corresponding tag parameters , if the list item stores a tag, if the list item does not store a tag, then this variable is empty

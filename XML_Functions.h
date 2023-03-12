@@ -101,6 +101,7 @@ namespace xmlp
     */
     bool CheckTagOrParamName(const std::string& tagString, bool isTagName);
 
+
     /*!
         This function checks the parameter value or strings between tags for validity. 
         If it is valid, it will return true, otherwise false

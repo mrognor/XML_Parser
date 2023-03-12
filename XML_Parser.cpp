@@ -2,6 +2,7 @@
 
 namespace xmlp
 {
+    /// \cond HIDDEN_SYMBOLS
     // This class required only to extract lines from files with iterators
     class line : public std::string {};
 
@@ -12,7 +13,8 @@ namespace xmlp
         std::getline(is, l);
         return is;
     }
-
+    /// \endcond
+    
     bool XmlParser::ValidateFile(const std::string& fileName)
     {
         std::ifstream fileToValidate(fileName.c_str());

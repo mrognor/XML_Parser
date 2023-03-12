@@ -127,3 +127,8 @@ Note that the structure of line breaks in the source file is not preserved
 
 # Saving RAM
 By default, the validator saves the tag path, but if your file is very large and has a complex structure with long paths, saving the path may take up too much RAM. This is because the path stores the names of the previous tags. This is done for ease of operation, but saving the tag path can be disabled. Then the definition of the tag path will need to be written manually and tracked when moving through the list.
+``` c++
+    xmlp::XmlParser p;
+
+    p.SetPathSaving(false);
+```

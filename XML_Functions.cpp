@@ -60,7 +60,7 @@ namespace xmlp
             if (stringToSplit[i] == splitterString[0])
             {
                 bool isSplitter = true;
-                for (int j = 1; j < splitterString.size(); j++)
+                for (int j = 1; j < splitterString.size(); ++j)
                 {
                     if (stringToSplit[i + j] != splitterString[j])
                     {
@@ -70,16 +70,16 @@ namespace xmlp
                 }
                 if (isSplitter)
                 {
-                    returnVector.push_back(splittedString);
+                    returnVector.emplace_back(splittedString);
                     splittedString = "";
                     i += splitterString.size();
                     continue;
                 }
             }
             splittedString += stringToSplit[i];
-            i++;
+            ++i;
         }
-        returnVector.push_back(splittedString);
+        returnVector.emplace_back(splittedString);
         return returnVector;
     }
 
@@ -94,7 +94,7 @@ namespace xmlp
         if (isFromLeft)
         {
             while (start < str.length() && (str[start] == ' ' || str[start] == '\t'))
-                start++;
+                ++start;
         }
 
         int end = str.length();
@@ -109,44 +109,63 @@ namespace xmlp
     }
 
 
-    bool CheckTagOrParamName(const std::string& tagString, bool isTagName)
+    bool ValidateTagName(const std::string& tagName)
     {
-        if (tagString == "")
+        if (tagName == "")
         {
-            LOG("Tag or param name can not be empty");
+            LOG("Tag name can not be empty");
             return false;
         }
 
         // Check first symbol on tag string
-        if (isTagName && !isalpha(tagString[0]))
+        if (!isalpha(tagName[0]))
         {
-            LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in tag name");
-            return false;    
-        }
-
-        // Check first symbol on param string
-        if (!isTagName && !(tagString[0] == '_' || isalpha(tagString[0])))
-        {
-            LOG("Symbol: \"" + std::string(1, tagString[0]) + "\" not allowed in param name");
+            LOG("Symbol: \"" + std::string(1, tagName[0]) + "\" not allowed in tag name");
             return false;
         }
 
-        for (auto ch : tagString)
+        for (auto ch : tagName)
         {
             // Check all available symbols in tag name
-            if ((isalpha(ch) || isalnum(ch) || ch == '.' || ch == '_' || ch == '-') == false)
+            if ((isalpha(ch) || isalnum(ch) || ch == '_' || ch == '-') == false)
             {
-                LOG("Symbol: \"" + std::string(1, ch) + "\" not allowed in tag or param name");
+                LOG("Symbol: \"" + std::string(1, ch) + "\" not allowed in tag name");
                 return false;
             }
         }
         return true;
     }
 
+    bool ValidateTagParamName(const std::string& paramName)
+    {
+        if (paramName == "")
+        {
+            LOG("Param name can not be empty");
+            return false;
+        }
+
+        // Check first symbol on param string
+        if (!(paramName[0] == '_' || isalpha(paramName[0])))
+        {
+            LOG("Symbol: \"" + std::string(1, paramName[0]) + "\" not allowed in param name");
+            return false;
+        }
+
+        for (auto ch : paramName)
+        {
+            // Check all available symbols in param name
+            if ((isalpha(ch) || isalnum(ch) || ch == '.' || ch == '_' || ch == '-' || ch == ':') == false)
+            {
+                LOG("Symbol: \"" + std::string(1, ch) + "\" not allowed in param name");
+                return false;
+            }
+        }
+        return true;
+    }
 
     bool CheckString(const std::string& valueString)
     {
-        for (auto it = valueString.begin(); it != valueString.end(); it++)
+        for (auto it = valueString.begin(); it != valueString.end(); ++it)
         {
             if (*it == '<')
             {
@@ -231,11 +250,11 @@ namespace xmlp
             tmpTagName = trimmedTagString.substr(0, firstTabPos);
 
         // Check tag name validity and set variable to it
-        if (CheckTagOrParamName(tmpTagName, true))
+        if (ValidateTagName(tmpTagName))
             tagName = tmpTagName;
         else
         {
-            LOG("Wrong tag or parametr name");
+            LOG("Wrong tag name: " + tagName);
             return false;
         }
                 
@@ -267,7 +286,8 @@ namespace xmlp
         int paramsCounter = 0;
         int valuesCounter = 0;
 
-        for (auto it = trimmedParamsLine.begin(); it != trimmedParamsLine.end(); it++)
+        // Check param name to validity
+        for (auto it = trimmedParamsLine.begin(); it != trimmedParamsLine.end(); ++it)
         {
             // Opening param value setting "=" symbol
             if (isSettingParam == false && *it == '=')
@@ -275,12 +295,12 @@ namespace xmlp
                 isSettingParam = true;
                 paramName = TrimString(lastString);
                 
-                paramsCounter++;
+                ++paramsCounter;
                 lastString = "";
 
-                if (!CheckTagOrParamName(paramName, false))
+                if (!ValidateTagParamName(paramName))
                 {
-                    LOG("Wrong tag or parametr name");
+                    LOG("Wrong parametr name: " + paramName);
                     return false;
                 }
 
@@ -314,7 +334,7 @@ namespace xmlp
                 isSettingParam = false;
                 isParamValue = false;
 
-                valuesCounter++;
+                ++valuesCounter;
 
                 if (!CheckString(lastString))
                 {
@@ -346,5 +366,10 @@ namespace xmlp
 
         paramsAndValues = tmpParamsAndValues;
         return true;
+    }
+
+    bool IsIteratorEmpty(const std::list<XmlData>::iterator& it)
+    {
+        return it == std::list<xmlp::XmlData>::iterator();
     }
 }

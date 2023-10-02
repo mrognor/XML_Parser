@@ -91,16 +91,23 @@ namespace xmlp
     std::string TrimString(const std::string& str, bool isFromLeft = true, bool isFromRight = true);
 
     /*!
-        This function checks the tag name or the name of its parameter for validity. 
-        If it is valid, it will return true, otherwise false
+        This function validate the tag name. 
 
-        \param[in] tagString string with tag name or tag parametr name
-        \param[in] isTagName boolean variable to indicate that the tag or parameter name should be checked
+        \param[in] tagName string with tag name
 
-        \return Return true if this string can be valid tag name or parametr name, return false otherwise
+        \return Return true if this string can be valid tag name, return false otherwise
     */
-    bool CheckTagOrParamName(const std::string& tagString, bool isTagName);
+    bool ValidateTagName(const std::string& tagName);
 
+    /*!
+        This function validate the param name. 
+
+        \param[in] paramName string with param name
+
+        \return Return true if this string can be valid parametrs string, return false otherwise
+    */
+    bool ValidateTagParamName(const std::string& paramName);
+    
     /*!
         This function checks the parameter value or strings between tags for validity. 
         If it is valid, it will return true, otherwise false
@@ -124,6 +131,15 @@ namespace xmlp
     bool ParseTagString(const std::string& tagString, std::string& tagName, std::map<std::string, std::string>& paramsAndValues);
 
     /*!
+        The function of checking the iterator for the presence of an object in it
+
+        \param[in] it iterator to check
+
+        \return Return true if this iteratot empty, return false otherwise
+    */
+    bool IsIteratorEmpty(const std::list<XmlData>::iterator& it);
+    
+    /*!
         \brief Template function for checking the number of occurrences of what in where
 
         \warning The where object must be iterable, i.e. it must have the begin and end functions
@@ -133,7 +149,7 @@ namespace xmlp
     {
         int count = 0;
         for (const auto& it : where)
-            if (it == what) count++;
+            if (it == what) ++count;
         return count;
     }
 
@@ -147,6 +163,8 @@ namespace xmlp
         \param[out] listWithAllData list for storing all data in a container. By default, the variable is nullptr and no data is saved.
         \param[in] isPathSaving boolean variable to indicate whether to save the data path in the list. 
         It is necessary because saving the path requires a lot of additional memory, and determining the path during list processing is quite simple
+
+        \return Returns true if the data is valid, otherwise returns false
     */
     template<class T>
     bool Validate(T begin, T end, std::list<XmlData>* listWithAllData = nullptr, bool isPathSaving = true)
@@ -174,26 +192,22 @@ namespace xmlp
         bool isSpecString = false;
 
         // For loop by iterator
-        for (auto xmlStringIt = begin; xmlStringIt != end; xmlStringIt++)
+        for (auto xmlStringIt = begin; xmlStringIt != end; ++xmlStringIt)
         {
-            lineNumber++;
+            ++lineNumber;
             std::string xmlString = (std::string)(*xmlStringIt);
 
             // Ignore line with xml specification
             if (lineNumber == 1)
             {
                 std::string trimString = TrimString(xmlString, false);
-                // Check if it is starts from "<?" string
-                if(xmlString.length() >= 5 && xmlString[0] == '<' && xmlString[1] == '?' && xmlString[2] == 'x' && 
-                xmlString[3] == 'm' && xmlString[4] == 'l')
-                {
+                // Check if it is starts from "<?x" string
+                if(xmlString.length() >= 3 && xmlString[0] == '<' && xmlString[1] == '?' && xmlString[2] == 'x')
                     isSpecString = true;
-                    continue;
-                }
             }
 
             // For loop by string
-            for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); stringChar++)
+            for (auto stringChar = xmlString.begin(); stringChar != xmlString.end(); ++stringChar)
             {
                 // Check if it is closing spec string
                 if (isSpecString && *stringChar == '>' && *(stringChar - 1) == '?')
@@ -249,7 +263,7 @@ namespace xmlp
                         }
 
                         // Store data
-                        listWithAllData->push_back(commentData);
+                        listWithAllData->emplace_back(commentData);
                     }
 
                     commentString.clear();
@@ -314,7 +328,7 @@ namespace xmlp
                         }
 
                         // Store data
-                        listWithAllData->push_back(textData);
+                        listWithAllData->emplace_back(textData);
                     }
 
                     betweenTagsString.clear();
@@ -365,7 +379,7 @@ namespace xmlp
                                 return false;
                             }
 
-                            tagStringsStackList.push_back(tagName); // Add opening tag to stack
+                            tagStringsStackList.emplace_back(tagName); // Add opening tag to stack
                             wasAtLeastOneTag = true;
                         }
                         else // One line tag check
@@ -423,7 +437,7 @@ namespace xmlp
                             if (!tagStringsStackList.empty())
                             {
                                 // Add all path elements except last
-                                for (auto it = tagStringsStackList.begin(); it != --tagStringsStackList.end(); it++)
+                                for (auto it = tagStringsStackList.begin(); it != --tagStringsStackList.end(); ++it)
                                     path = path + *it + "/" ;
 
                                 // Add last path element if it is closing tag
@@ -434,7 +448,7 @@ namespace xmlp
                         }
 
                         // Store data
-                        listWithAllData->push_back(tagData);
+                        listWithAllData->emplace_back(tagData);
                     }
                     tagString.clear();
                     continue;
@@ -486,7 +500,7 @@ namespace xmlp
                     }
 
                     // Store data
-                    listWithAllData->push_back(textData);
+                    listWithAllData->emplace_back(textData);
                 }
 
                 betweenTagsString.clear();
@@ -502,6 +516,14 @@ namespace xmlp
             return false;
         }
         else
-            return true;
+        {
+            if (isSpecString)
+            {
+                LOG("XML spec string dont closed");
+                return false;
+            }
+            else
+                return true;
+        }       
     }
 }

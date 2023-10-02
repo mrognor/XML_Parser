@@ -138,14 +138,14 @@ int main()
     // Checking tag name
     bool isAllGoodWithTagNames = true;
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; ++i)
     {
         std::string tagName = "<root" + std::string(1, (unsigned char)i);
         tagName += "> data </root";
         tagName += std::string(1, (unsigned char)i);
         tagName += ">";
 
-        if (i == '_' || i == '-' || i == '.' || i == ' ' || i == '\t' || isalnum(i) || isalpha(i))
+        if (i == '_' || i == '-' || i == ' ' || i == '\t' || isalnum(i) || isalpha(i))
         {
             if (!p.ValidateString(tagName))
                 isAllGoodWithTagNames = false;
@@ -168,7 +168,7 @@ int main()
     // Checking tag name first symbol
     isAllGoodWithTagNames = true;
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; ++i)
     {
         std::string tagName = "<" + std::string(1, (unsigned char)i);
         tagName += "root> data </";
@@ -198,12 +198,12 @@ int main()
     // Checking param name
     bool isAllGoodWithParamNames = true;
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; ++i)
     {
         std::string paramName = "<root param" + std::string(1, (unsigned char)i);
         paramName += " = \"d\"> data </root>";
 
-        if (i == '_' || i == '-' || i == '.' || i == ' ' || i == '\t' || isalnum(i) || isalpha(i))
+        if (i == '_' || i == '-' || i == '.' || i == ' ' || i == ':' || i == '\t' || isalnum(i) || isalpha(i))
         {
             if (!p.ValidateString(paramName))
                 isAllGoodWithParamNames = false;
@@ -226,7 +226,7 @@ int main()
     // Checking param name first symbol
     isAllGoodWithParamNames = true;
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < 256; ++i)
     {
         std::string paramName = "<root " + std::string(1, (unsigned char)i);
         paramName += "param = \"d\"> data </root>";

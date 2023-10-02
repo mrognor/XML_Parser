@@ -125,6 +125,33 @@ namespace xmlp
             \return will return true if the write was successful, otherwise it will return false
         */ 
         bool WriteDataToFile(std::string fileName);
+
+        /*! 
+            Function to find first inline element by tag name.
+
+            \param[in] tagName tag to find
+            \param[in] iterator reference to the iterator. If the tag was found, the iterator will be saved, otherwise the GetData().end() value will be saved to iterator.
+            \return Returns true if the iterator was found and false otherwise
+        */
+        bool FindInlineElement(std::string tagName, std::list<XmlData>::iterator& iterator);
+
+        /*! 
+            Function to find first opening element by tag name.
+
+            \param[in] tagName tag to find
+            \param[in] iterator reference to the iterator. If the tag was found, the iterator will be saved, otherwise the GetData().end() value will be saved to iterator.
+            \return Returns true if the iterator was found and false otherwise
+        */
+        bool FindOpeningElement(std::string tagName, std::list<XmlData>::iterator& iterator);
+
+        /*! 
+            Function to find first closing element by tag name.
+
+            \param[in] tagName tag to find
+            \param[in] iterator reference to the iterator. If the tag was found, the iterator will be saved, otherwise the GetData().end() value will be saved to iterator.
+            \return Returns true if the iterator was found and false otherwise
+        */
+        bool FindClosingElement(std::string tagName, std::list<XmlData>::iterator& iterator);
     };
 
 

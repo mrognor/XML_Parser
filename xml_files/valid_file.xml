@@ -19,7 +19,7 @@ Comment test 4
 test 5-->
 
 <tagA>
-	<tag._-123> </tag._-123> <!-- Tag name validity -->
+	<tag_-123> </tag_-123> <!-- Tag name validity -->
 	<tagB > </tagB  ><!-- Space after tag name -->
 	<tagC	> </tagC		> <!-- Tab after tag name -->
 	<tagD	 > </tagD		  > <!-- Tab and space after tag name -->

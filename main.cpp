@@ -14,7 +14,7 @@ int main()
     
     std::list<xmlp::XmlData>::iterator beg, end;
 
-    for (auto it = p.GetData().begin(); it != p.GetData().end(); it++)
+    for (auto it = p.GetData().begin(); it != p.GetData().end(); ++it)
     {
         if (it->TagName == "tagC" && it->DataType == xmlp::openingTag)
         {

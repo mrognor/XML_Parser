@@ -42,14 +42,17 @@ namespace xmlp
 
     bool XmlParser::InsertData(const std::list<XmlData>::iterator& posToInsertIt, std::list<std::string> listToInsert)
     {
+        if (posToInsertIt == std::list<xmlp::XmlData>::iterator())
+            return false;
+
         std::list<XmlData> listWithInsertData;
-        listToInsert.push_front("<VALIDATION_ROOT_TAG>");
-        listToInsert.push_back("</VALIDATION_ROOT_TAG>");
+        listToInsert.emplace_front("<VALIDATION_ROOT_TAG>");
+        listToInsert.emplace_back("</VALIDATION_ROOT_TAG>");
 
         // Check if it appending valid data
         if (Validate(listToInsert.begin(), listToInsert.end(), &listWithInsertData))
         {
-            for (auto it = ++listWithInsertData.begin(); it != --listWithInsertData.end(); it++)
+            for (auto it = ++listWithInsertData.begin(); it != --listWithInsertData.end(); ++it)
             {
                 std::string properPath = it->Path.substr(it->Path.find('/') + 1);
                 properPath = properPath.substr(properPath.find('/') + 1);
@@ -70,6 +73,9 @@ namespace xmlp
     bool XmlParser::InsertData(const std::list<XmlData>::iterator& firstPosToInsertIt, const std::list<XmlData>::iterator& secondPosToInsertIt, 
         std::list<std::string> firstListToInsert, std::list<std::string> secondListToInsert)
     {
+        if (firstPosToInsertIt == std::list<xmlp::XmlData>::iterator() || secondPosToInsertIt == std::list<xmlp::XmlData>::iterator())
+            return false;
+
         std::list<XmlData> listWithInsertData;
 
         Data.insert(firstPosToInsertIt, firstListToInsert.begin(), firstListToInsert.end());
@@ -100,12 +106,57 @@ namespace xmlp
         {
             int tabCount = Count(it.Path, '/');
 
-            for (int i = 1; i < tabCount; i++)
+            for (int i = 1; i < tabCount; ++i)
                 file << '\t';
             file << it.Data << std::endl;
         }
         
         file.close();
         return true;
+    }
+
+    bool XmlParser::FindInlineElement(std::string tagName, std::list<XmlData>::iterator& iterator)
+    {
+        for (auto it = Data.begin(); it != Data.end(); ++it)
+        {
+            if (it->TagName == tagName && it->DataType == xmlp::inlineTag)
+            {
+                iterator = it;
+                return true;
+            }        
+        }
+
+        iterator = Data.end();
+        return false;
+    }
+
+    bool XmlParser::FindOpeningElement(std::string tagName, std::list<XmlData>::iterator& iterator)
+    {
+        for (auto it = Data.begin(); it != Data.end(); ++it)
+        {
+            if (it->TagName == tagName && it->DataType == xmlp::openingTag)
+            {
+                iterator = it;
+                return true;
+            }        
+        }
+
+        iterator = Data.end();
+        return false;
+    }
+
+    bool XmlParser::FindClosingElement(std::string tagName, std::list<XmlData>::iterator& iterator)
+    {
+        for (auto it = Data.begin(); it != Data.end(); ++it)
+        {
+            if (it->TagName == tagName && it->DataType == xmlp::closingTag)
+            {
+                iterator = it;
+                return true;
+            }
+        }
+
+        iterator = Data.end();
+        return false;
     }
 }
